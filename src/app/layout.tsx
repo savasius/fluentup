@@ -17,17 +17,53 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "FluentUp English — Learn English the fun way",
+  title: {
+    default: "FluentUp English — Learn English the fun way",
+    template: "%s · FluentUp English",
+  },
   description:
-    "Gamified English learning platform. Practice vocabulary, grammar, listening and speaking with your AI tutor.",
+    "Gamified English learning platform. Practice vocabulary, grammar, listening and speaking with your AI tutor. Earn XP, level up, keep your streak alive.",
+  keywords: [
+    "English learning",
+    "language app",
+    "vocabulary",
+    "grammar",
+    "AI tutor",
+    "gamified learning",
+    "English practice",
+  ],
+  authors: [{ name: "FluentUp" }],
+  creator: "FluentUp",
+  publisher: "FluentUp",
   metadataBase: new URL("https://fluentupenglish.com"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "FluentUp English",
+    title: "FluentUp English — Learn English the fun way",
     description:
-      "Learn English the fun way. Earn XP, level up, keep your streak alive.",
+      "Gamified English learning platform. Earn XP, level up, keep your streak alive.",
     url: "https://fluentupenglish.com",
     siteName: "FluentUp English",
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FluentUp English",
+    description:
+      "Gamified English learning platform. Earn XP, level up, keep your streak alive.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
