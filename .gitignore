@@ -41,3 +41,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local reference files (not part of the codebase)
+fluentup-design-system.md
+fluentup.jsx
