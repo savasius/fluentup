@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   Dumbbell,
+  Gamepad2,
   BookOpen,
   Notebook,
   GraduationCap,
@@ -26,6 +27,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Dashboard", icon: Home },
   { href: "/practice", label: "Practice", icon: Dumbbell },
+  { href: "/games", label: "Games", icon: Gamepad2 },
   { href: "/vocabulary", label: "Vocabulary", icon: BookOpen },
   { href: "/grammar", label: "Grammar", icon: Notebook },
   { href: "/lesson", label: "Lesson", icon: GraduationCap },
