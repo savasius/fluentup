@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { Card, Badge, Button } from "@/components/ui";
 import { PracticeCard, QuestBanner } from "@/components/domain";
@@ -13,6 +11,7 @@ import {
   Mascot,
 } from "@/components/illustrations";
 import { Crown, ChevronRight, Sparkles, BookMarked } from "lucide-react";
+import { DbHealthCheck } from "@/components/dev/DbHealthCheck";
 
 const USER = {
   name: "Ayşe",
@@ -210,6 +209,8 @@ export default function DashboardPage() {
           </div>
         </Card>
       </section>
+
+      <DbHealthCheck />
     </div>
   );
 }
