@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Brand — Primary (blue) */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1e40af;
+  --color-primary-soft: #eff6ff;
+  --color-primary-tint: #dbeafe;
+
+  /* Brand — Action (red) */
+  --color-action: #ef4444;
+  --color-action-dark: #b91c1c;
+  --color-action-soft: #fef2f2;
+  --color-action-tint: #fee2e2;
+
+  /* Brand — Reward (amber) */
+  --color-reward: #f59e0b;
+  --color-reward-dark: #b45309;
+  --color-reward-soft: #fffbeb;
+  --color-reward-tint: #fef3c7;
+
+  /* Brand — Success (green) */
+  --color-success: #10b981;
+  --color-success-dark: #047857;
+  --color-success-soft: #ecfdf5;
+  --color-success-tint: #d1fae5;
+
+  /* Brand — Rare (violet) */
+  --color-rare: #8b5cf6;
+  --color-rare-dark: #6d28d9;
+  --color-rare-soft: #f5f3ff;
+  --color-rare-tint: #ede9fe;
+
+  /* Teal accent */
+  --color-teal: #14b8a6;
+  --color-teal-dark: #0f766e;
+
+  /* Ink (text) */
+  --color-ink: #0f172a;
+  --color-ink-soft: #475569;
+  --color-ink-muted: #94a3b8;
+
+  /* Surfaces */
+  --color-paper: #fafaf9;
+  --color-line: #e2e8f0;
+  --color-line-soft: #f1f5f9;
+
+  /* Typography — wired to next/font variables in layout.tsx */
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+
+  /* Duolingo-style solid "3D-lite" shadows */
+  --shadow-solid-primary: 0 3px 0 0 #1e40af;
+  --shadow-solid-action: 0 3px 0 0 #b91c1c;
+  --shadow-solid-reward: 0 3px 0 0 #b45309;
+  --shadow-solid-success: 0 3px 0 0 #047857;
+  --shadow-solid-dark: 0 3px 0 0 #334155;
+  --shadow-soft: 0 8px 24px -8px rgba(15, 23, 42, 0.08);
+  --shadow-lift: 0 12px 28px -12px rgba(15, 23, 42, 0.12);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  html,
+  body {
+    @apply bg-paper text-ink;
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    @apply bg-primary-tint text-primary-dark;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
 }
