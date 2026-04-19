@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { Card, Badge, Button } from "@/components/ui";
+import { PracticeCard, QuestBanner } from "@/components/domain";
 import {
   RocketScene,
   SwordsScene,
@@ -9,212 +11,201 @@ import {
   BookPencilScene,
   ClockScene,
   Mascot,
-  QuestScene,
 } from "@/components/illustrations";
-import { Play, Sparkles } from "lucide-react";
+import { Crown, ChevronRight, Sparkles, BookMarked } from "lucide-react";
 
-const SCENES = [
+const USER = {
+  name: "Ayşe",
+  level: 8,
+  xp: 2840,
+  streak: 12,
+};
+
+const PRACTICE_MODES = [
   {
-    name: "RocketScene",
-    tag: "Sprint / speed",
-    tint: "bg-primary-tint",
-    Component: RocketScene,
+    title: "Sprint",
+    Scene: RocketScene,
+    tintClassName: "bg-primary-tint",
+    difficulty: "HARD" as const,
+    xp: 85,
+    buttonVariant: "action" as const,
+    buttonLabel: "START",
   },
   {
-    name: "SwordsScene",
-    tag: "Duel / battle",
-    tint: "bg-action-tint",
-    Component: SwordsScene,
+    title: "Word Duel",
+    Scene: SwordsScene,
+    tintClassName: "bg-action-tint",
+    difficulty: "MEDIUM" as const,
+    xp: 120,
+    buttonVariant: "primary" as const,
+    buttonLabel: "BATTLE",
+    footer: "3,343 players today",
   },
   {
-    name: "PuzzleScene",
-    tag: "Gap fill / match",
-    tint: "bg-primary-tint",
-    Component: PuzzleScene,
+    title: "Fill the Gap",
+    Scene: PuzzleScene,
+    tintClassName: "bg-primary-tint",
+    difficulty: "EASY" as const,
+    xp: 40,
+    buttonVariant: "primary" as const,
+    buttonLabel: "START",
   },
   {
-    name: "HeadphonesScene",
-    tag: "Listening",
-    tint: "bg-reward-tint",
-    Component: HeadphonesScene,
+    title: "Listening",
+    Scene: HeadphonesScene,
+    tintClassName: "bg-reward-tint",
+    difficulty: "EASY" as const,
+    xp: 45,
+    buttonVariant: "primary" as const,
+    buttonLabel: "START",
   },
   {
-    name: "BookPencilScene",
-    tag: "Sentence builder",
-    tint: "bg-success-tint",
-    Component: BookPencilScene,
+    title: "Sentence Builder",
+    Scene: BookPencilScene,
+    tintClassName: "bg-success-tint",
+    difficulty: "MEDIUM" as const,
+    xp: 120,
+    buttonVariant: "reward" as const,
+    buttonLabel: "START",
   },
   {
-    name: "ClockScene",
-    tag: "Spaced repetition",
-    tint: "bg-rare-tint",
-    Component: ClockScene,
+    title: "Repetition",
+    Scene: ClockScene,
+    tintClassName: "bg-rare-tint",
+    difficulty: "EASY" as const,
+    xp: 55,
+    buttonVariant: "teal" as const,
+    buttonLabel: "START",
   },
 ];
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-10">
-      <div>
-        <h1 className="font-display text-3xl font-extrabold text-ink">
-          Illustration System Showcase
-        </h1>
-        <p className="mt-1 text-ink-soft">
-          Aşama 5 kontrol galerisi. 6 scene + Figgy mascot + QuestScene hazır.
-          Aşama 6'da Dashboard gerçek içerikle dolacak.
-        </p>
-      </div>
+    <div className="space-y-8">
+      {/* ============ HERO ============ */}
+      <Card className="p-6 lg:p-8 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+          <div className="flex-1">
+            <Badge color="reward" icon={Crown}>
+              Level {USER.level} · Intermediate
+            </Badge>
 
-      {/* ========== PRACTICE SCENES ========== */}
-      <section className="space-y-4">
-        <h2 className="font-display text-lg font-extrabold text-ink">
-          Practice scenes
-        </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {SCENES.map(({ name, tag, tint, Component }) => (
-            <Card key={name} className="p-4">
-              <div
-                className={`${tint} rounded-2xl h-36 flex items-center justify-center mb-3`}
-              >
-                <div className="w-24 h-24">
-                  <Component />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-display font-extrabold text-ink text-sm">
-                    {name}
-                  </div>
-                  <div className="text-xs text-ink-muted font-medium">
-                    {tag}
-                  </div>
-                </div>
-                <Badge color="slate" size="sm">
-                  120×120
-                </Badge>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
+            <h1 className="mt-3 font-display text-3xl lg:text-4xl font-extrabold text-ink leading-tight">
+              Welcome back,{" "}
+              <span className="text-primary">{USER.name}</span>
+            </h1>
 
-      {/* ========== MASCOT ========== */}
-      <section className="space-y-4">
-        <h2 className="font-display text-lg font-extrabold text-ink">
-          Figgy — brand mascot
-        </h2>
-        <p className="text-sm text-ink-soft">
-          Platform genelinde tek karakter. Dashboard hero'da 180-200px, Practice
-          header'da 100px, AI Tutor avatar'ında 48px. Aynı SVG, farklı `size`
-          prop'u.
-        </p>
+            <p className="mt-2 text-ink-soft text-[15px] max-w-md">
+              Pick a practice mode to keep your streak alive. You&apos;re{" "}
+              <span className="font-bold text-ink">3 lessons</span> away from
+              unlocking Advanced Conversations.
+            </p>
 
-        <Card className="p-6">
-          <div className="flex items-end gap-8 flex-wrap">
-            <div className="text-center">
-              <div className="bg-primary-soft rounded-2xl p-3 flex items-center justify-center">
-                <Mascot size={48} />
-              </div>
-              <div className="mt-2 text-[10px] text-ink-muted font-bold uppercase tracking-widest">
-                48px · avatar
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="bg-primary-soft rounded-2xl p-4 flex items-center justify-center">
-                <Mascot size={100} />
-              </div>
-              <div className="mt-2 text-[10px] text-ink-muted font-bold uppercase tracking-widest">
-                100px · inline
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="bg-primary-soft rounded-3xl p-5 flex items-center justify-center">
-                <Mascot size={200} />
-              </div>
-              <div className="mt-2 text-[10px] text-ink-muted font-bold uppercase tracking-widest">
-                200px · hero
-              </div>
-            </div>
-          </div>
-        </Card>
-      </section>
-
-      {/* ========== QUEST SCENE ========== */}
-      <section className="space-y-4">
-        <h2 className="font-display text-lg font-extrabold text-ink">
-          QuestScene — seasonal banner
-        </h2>
-        <p className="text-sm text-ink-soft">
-          Wide format (400×200) scenic banner. Parent container'ın arka planı
-          sky olur (primary-soft/tint gradient), SVG transparent yerleşir.
-        </p>
-
-        <Card className="overflow-hidden bg-gradient-to-r from-primary-tint to-primary-soft border-primary-tint">
-          <div className="flex flex-col lg:flex-row">
-            <div className="flex-1 p-6 lg:p-8">
-              <Badge color="primary" icon={Sparkles}>
-                Seasonal Quest
-              </Badge>
-              <h3 className="mt-3 font-display text-2xl lg:text-3xl font-extrabold text-ink leading-tight">
-                The Tower of Tongues
-              </h3>
-              <p className="mt-2 text-ink-soft max-w-md">
-                Complete all 5 practice modes to unlock a special badge and
-                claim{" "}
-                <span className="font-bold text-primary-dark">+1,000 XP</span>.
-              </p>
-
-              <div className="mt-5 flex items-center gap-3">
-                <div className="text-xs font-bold text-primary-dark">
-                  Progress: 2 / 5
-                </div>
-                <Button variant="primary" shape="pill" size="md" icon={Play}>
-                  Continue
-                </Button>
-              </div>
-            </div>
-
-            <div className="lg:w-1/2 h-40 lg:h-auto min-h-[180px] relative">
-              <QuestScene className="absolute inset-0 w-full h-full" />
-            </div>
-          </div>
-        </Card>
-      </section>
-
-      {/* ========== COMPOSITION TEST ========== */}
-      <section className="space-y-4">
-        <h2 className="font-display text-lg font-extrabold text-ink">
-          Composition: Mascot + primitives
-        </h2>
-        <p className="text-sm text-ink-soft">
-          Mascot'un dashboard hero'daki gibi bir kart içinde, text + CTA ile
-          birlikte nasıl durduğunu test etmek için. Aşama 6'da bu hero birebir
-          gerçeğe dönüşecek.
-        </p>
-
-        <Card className="p-6 lg:p-8 relative overflow-hidden">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="flex-1">
-              <Badge color="reward">Level 8 · Intermediate</Badge>
-              <h3 className="mt-3 font-display text-3xl lg:text-4xl font-extrabold text-ink leading-tight">
-                Choose your <span className="text-primary">practice mode</span>
-              </h3>
-              <p className="mt-2 text-ink-soft text-[15px] max-w-md">
-                Sharpen your English in a fun way. Earn XP, level up, keep your
-                streak alive.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link href="/lesson">
                 <Button variant="action" shape="pill" size="lg">
-                  Complete today's goal
+                  Complete today&apos;s goal
                 </Button>
+              </Link>
+              <Link href="/practice">
                 <Button variant="secondary" shape="pill" size="lg">
                   Browse practice
                 </Button>
-              </div>
+              </Link>
             </div>
+          </div>
 
-            <div className="hidden md:block">
-              <Mascot size={200} />
+          <div className="hidden md:block">
+            <Mascot size={180} />
+          </div>
+        </div>
+      </Card>
+
+      {/* ============ CONTINUE PRACTICING ============ */}
+      <section>
+        <div className="flex items-end justify-between mb-4">
+          <h2 className="font-display text-xl font-extrabold text-ink flex items-center gap-2">
+            Continue practicing
+            <Sparkles
+              className="w-5 h-5 text-reward"
+              fill="#F59E0B"
+              strokeWidth={0}
+            />
+          </h2>
+          <Link
+            href="/practice"
+            className="flex items-center gap-1 text-sm font-bold text-action hover:text-action-dark transition"
+          >
+            View all <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
+          </Link>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PRACTICE_MODES.map((mode) => {
+            const { Scene, ...rest } = mode;
+            return (
+              <PracticeCard
+                key={mode.title}
+                {...rest}
+                scene={<Scene />}
+              />
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ============ SEASONAL QUEST ============ */}
+      <QuestBanner
+        title="The Tower of Tongues"
+        description="Complete all 5 practice modes to unlock a special badge and claim"
+        xpReward={1000}
+        current={2}
+        total={5}
+      />
+
+      {/* ============ VOCABULARY PREVIEW ============ */}
+      <section>
+        <div className="flex items-end justify-between mb-3">
+          <h2 className="font-display text-xl font-extrabold text-ink flex items-center gap-2">
+            <BookMarked
+              className="w-5 h-5 text-primary"
+              strokeWidth={2.3}
+            />
+            Vocabulary collection
+          </h2>
+          <Link
+            href="/vocabulary"
+            className="flex items-center gap-1 text-sm font-bold text-action hover:text-action-dark transition"
+          >
+            Open <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
+          </Link>
+        </div>
+        <p className="text-ink-soft mb-4">
+          Collect and master new words as you progress.
+        </p>
+
+        <Card className="p-5">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-reward-tint flex items-center justify-center font-display font-extrabold text-xl text-reward-dark flex-shrink-0">
+              A
+            </div>
+            <div className="flex-1">
+              <div className="font-extrabold text-ink">Alex</div>
+              <div className="mt-1 text-sm text-ink-soft">
+                Have you practiced{" "}
+                <span className="font-bold text-primary-dark">
+                  celebrations
+                </span>{" "}
+                vocabulary yet? Let&apos;s review how to talk about holidays
+                together.
+              </div>
+              <div className="mt-3">
+                <Link href="/tutor">
+                  <Button variant="primary" shape="pill" size="sm">
+                    Start conversation
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </Card>
