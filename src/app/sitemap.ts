@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { createServerClient } from "@/lib/supabase";
 
 type WordSitemapRow = { slug: string; updated_at: string };
+type GrammarSitemapRow = { slug: string; updated_at: string };
 
 const BASE_URL = "https://fluentupenglish.com";
 
@@ -32,15 +33,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   let wordEntries: MetadataRoute.Sitemap = [];
+  let grammarEntries: MetadataRoute.Sitemap = [];
+
   try {
     const supabase = await createServerClient();
-    const result = await supabase
-      .from("words")
-      .select("slug, updated_at")
-      .eq("published", true);
 
-    const words = result.data as WordSitemapRow[] | null;
+    const [wordsResult, grammarResult] = await Promise.all([
+      supabase.from("words").select("slug, updated_at").eq("published", true),
+      supabase
+        .from("grammar_topics")
+        .select("slug, updated_at")
+        .eq("published", true),
+    ]);
 
+    const words = wordsResult.data as WordSitemapRow[] | null;
     if (words) {
       wordEntries = words.map((w) => ({
         url: `${BASE_URL}/vocabulary/${w.slug}`,
@@ -49,9 +55,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
       }));
     }
+
+    const topics = grammarResult.data as GrammarSitemapRow[] | null;
+    if (topics) {
+      grammarEntries = topics.map((t) => ({
+        url: `${BASE_URL}/grammar/${t.slug}`,
+        lastModified: new Date(t.updated_at),
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      }));
+    }
   } catch (err) {
-    console.error("Sitemap: failed to fetch words", err);
+    console.error("Sitemap: failed to fetch dynamic entries", err);
   }
 
-  return [...staticEntries, ...wordEntries];
+  return [...staticEntries, ...wordEntries, ...grammarEntries];
 }
