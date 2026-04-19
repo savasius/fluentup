@@ -7,3 +7,4 @@ export { GrammarCard } from "./GrammarCard";
 export { GrammarFilters } from "./GrammarFilters";
 export { GameCard } from "./GameCard";
 export { WordScrambleGame } from "./WordScrambleGame";
+export { WordMatchGame } from "./WordMatchGame";
