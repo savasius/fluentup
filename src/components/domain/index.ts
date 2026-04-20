@@ -11,3 +11,6 @@ export { WordMatchGame } from "./WordMatchGame";
 export { SentenceBuilderGame } from "./SentenceBuilderGame";
 export { PlacementQuiz } from "./PlacementQuiz";
 export { ProfileForm } from "./ProfileForm";
+export { WordOfTheDayCard } from "./WordOfTheDayCard";
+export { GuestDashboard, type GuestPreviewWord } from "./GuestDashboard";
+export { UserDashboard } from "./UserDashboard";

@@ -25,6 +25,8 @@ import {
   GAME_STORAGE_KEYS,
   type GameStats,
 } from "@/lib/games/economy";
+import { awardXp } from "@/lib/economy/actions";
+import { XP_REWARDS } from "@/lib/economy/constants";
 import type { CefrLevel } from "@/lib/supabase/database.types";
 
 interface Props {
@@ -65,6 +67,10 @@ export function SentenceBuilderGame({ sentences }: Props) {
   const [shuffledWords, setShuffledWords] = useState<string[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<number[]>([]);
   const [justCorrect, setJustCorrect] = useState(false);
+  const [xpSyncResult, setXpSyncResult] = useState<{
+    newAchievements: string[];
+  } | null>(null);
+  const [syncAttempted, setSyncAttempted] = useState(false);
 
   const filteredSentences = useMemo(() => {
     const allowed = LEVEL_FILTERS[levelFilter];
@@ -74,6 +80,21 @@ export function SentenceBuilderGame({ sentences }: Props) {
   useEffect(() => {
     setStats(readGameStats(GAME_STORAGE_KEYS.sentenceBuilder));
   }, []);
+
+  useEffect(() => {
+    if (gameState !== "finished" || syncAttempted || score <= 0) return;
+    setSyncAttempted(true);
+    const cappedXp = Math.min(sanitizeScore(score), XP_REWARDS.gameMax);
+    awardXp(cappedXp, "sentence-builder")
+      .then((result) => {
+        if (result) {
+          setXpSyncResult({ newAchievements: result.newAchievements });
+        }
+      })
+      .catch(() => {
+        // Guest veya network hatası.
+      });
+  }, [gameState, syncAttempted, score]);
 
   useEffect(() => {
     if (gameState !== "playing") return;
@@ -109,6 +130,8 @@ export function SentenceBuilderGame({ sentences }: Props) {
     setTimeLeft(ROUND_DURATION);
     setSentencesSolved(0);
     setJustCorrect(false);
+    setSyncAttempted(false);
+    setXpSyncResult(null);
     setGameState("playing");
     pickNewSentence();
   }
@@ -335,6 +358,21 @@ export function SentenceBuilderGame({ sentences }: Props) {
                 <span className="font-bold text-ink">
                   {stats.bestScore} XP
                 </span>
+              </div>
+            )}
+
+            {xpSyncResult && xpSyncResult.newAchievements.length > 0 && (
+              <div className="mt-4 mx-auto max-w-sm p-3 bg-reward-soft border border-reward-tint rounded-xl text-center">
+                <div className="text-xs font-bold uppercase tracking-widest text-reward-dark mb-1">
+                  Achievement unlocked!
+                </div>
+                <div className="font-display font-extrabold text-ink">
+                  {xpSyncResult.newAchievements.length} new{" "}
+                  {xpSyncResult.newAchievements.length === 1
+                    ? "badge"
+                    : "badges"}{" "}
+                  earned
+                </div>
               </div>
             )}
 

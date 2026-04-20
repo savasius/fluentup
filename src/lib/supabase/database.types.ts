@@ -188,6 +188,10 @@ export interface Database {
           longest_streak: number;
           hearts: number;
           last_active_at: string | null;
+          daily_goal: number;
+          daily_xp_earned: number;
+          daily_xp_date: string;
+          achievements: string[];
           created_at: string;
           updated_at: string;
         };
@@ -250,6 +254,23 @@ export interface Database {
         };
         Update: Partial<
           Database["public"]["Tables"]["user_lesson_completions"]["Insert"]
+        >;
+      };
+
+      word_of_the_day: {
+        Relationships: [];
+        Row: {
+          date: string;
+          word_id: string;
+          created_at: string;
+        };
+        Insert: {
+          date: string;
+          word_id: string;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["word_of_the_day"]["Insert"]
         >;
       };
     };

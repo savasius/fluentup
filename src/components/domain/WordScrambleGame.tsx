@@ -27,6 +27,8 @@ import {
   GAME_STORAGE_KEYS,
   type GameStats,
 } from "@/lib/games/economy";
+import { awardXp } from "@/lib/economy/actions";
+import { XP_REWARDS } from "@/lib/economy/constants";
 
 interface WordScrambleGameProps {
   words: ScrambleWord[];
@@ -70,6 +72,10 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
     lastPlayedAt: 0,
   });
   const [maxStreakThisGame, setMaxStreakThisGame] = useState(0);
+  const [xpSyncResult, setXpSyncResult] = useState<{
+    newAchievements: string[];
+  } | null>(null);
+  const [syncAttempted, setSyncAttempted] = useState(false);
 
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -91,6 +97,22 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
     migrateLegacyStats(GAME_STORAGE_KEYS.wordScramble, LEGACY_STORAGE_KEY);
     setStats(readGameStats(GAME_STORAGE_KEYS.wordScramble));
   }, []);
+
+  // Sync score to DB once when the game ends (auth kullanıcısı için).
+  useEffect(() => {
+    if (gameState !== "finished" || syncAttempted || score <= 0) return;
+    setSyncAttempted(true);
+    const cappedXp = Math.min(score, XP_REWARDS.gameMax);
+    awardXp(cappedXp, "word-scramble")
+      .then((result) => {
+        if (result) {
+          setXpSyncResult({ newAchievements: result.newAchievements });
+        }
+      })
+      .catch(() => {
+        // Guest ya da network hatası — sessizce yut.
+      });
+  }, [gameState, syncAttempted, score]);
 
   useEffect(() => {
     if (gameState !== "playing") return;
@@ -139,6 +161,8 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
     setTimeLeft(ROUND_DURATION);
     setWordsPlayed(0);
     setJustCorrect(false);
+    setSyncAttempted(false);
+    setXpSyncResult(null);
     setGameState("playing");
     pickNewWord();
   }
@@ -376,6 +400,21 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
               <div className="mt-4 text-sm text-ink-muted">
                 Best:{" "}
                 <span className="font-bold text-ink">{stats.bestScore} XP</span>
+              </div>
+            )}
+
+            {xpSyncResult && xpSyncResult.newAchievements.length > 0 && (
+              <div className="mt-4 mx-auto max-w-sm p-3 bg-reward-soft border border-reward-tint rounded-xl text-center">
+                <div className="text-xs font-bold uppercase tracking-widest text-reward-dark mb-1">
+                  Achievement unlocked!
+                </div>
+                <div className="font-display font-extrabold text-ink">
+                  {xpSyncResult.newAchievements.length} new{" "}
+                  {xpSyncResult.newAchievements.length === 1
+                    ? "badge"
+                    : "badges"}{" "}
+                  earned
+                </div>
               </div>
             )}
 

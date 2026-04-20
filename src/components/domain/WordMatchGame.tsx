@@ -24,6 +24,8 @@ import {
   GAME_STORAGE_KEYS,
   type GameStats,
 } from "@/lib/games/economy";
+import { awardXp } from "@/lib/economy/actions";
+import { XP_REWARDS } from "@/lib/economy/constants";
 
 interface WordMatchGameProps {
   words: MatchWord[];
@@ -83,6 +85,10 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
     word: string;
     def: string;
   } | null>(null);
+  const [xpSyncResult, setXpSyncResult] = useState<{
+    newAchievements: string[];
+  } | null>(null);
+  const [syncAttempted, setSyncAttempted] = useState(false);
 
   const filteredPool = useMemo(() => {
     const allowed = LEVEL_FILTERS[levelFilter];
@@ -93,6 +99,21 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
     migrateLegacyStats(GAME_STORAGE_KEYS.wordMatch, LEGACY_STORAGE_KEY);
     setStats(readGameStats(GAME_STORAGE_KEYS.wordMatch));
   }, []);
+
+  useEffect(() => {
+    if (gameState !== "finished" || syncAttempted || score <= 0) return;
+    setSyncAttempted(true);
+    const cappedXp = Math.min(sanitizeScore(score), XP_REWARDS.gameMax);
+    awardXp(cappedXp, "word-match")
+      .then((result) => {
+        if (result) {
+          setXpSyncResult({ newAchievements: result.newAchievements });
+        }
+      })
+      .catch(() => {
+        // Guest veya network hatası.
+      });
+  }, [gameState, syncAttempted, score]);
 
   useEffect(() => {
     if (gameState !== "playing") return;
@@ -141,6 +162,8 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
     setScore(0);
     setRoundsCompleted(0);
     setTimeLeft(ROUND_DURATION);
+    setSyncAttempted(false);
+    setXpSyncResult(null);
     setGameState("playing");
     const picked = pickRoundWords(filteredPool);
     setRoundWords(picked);
@@ -354,6 +377,21 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
                 <span className="font-bold text-ink">
                   {stats.bestScore} points
                 </span>
+              </div>
+            )}
+
+            {xpSyncResult && xpSyncResult.newAchievements.length > 0 && (
+              <div className="mt-4 mx-auto max-w-sm p-3 bg-reward-soft border border-reward-tint rounded-xl text-center">
+                <div className="text-xs font-bold uppercase tracking-widest text-reward-dark mb-1">
+                  Achievement unlocked!
+                </div>
+                <div className="font-display font-extrabold text-ink">
+                  {xpSyncResult.newAchievements.length} new{" "}
+                  {xpSyncResult.newAchievements.length === 1
+                    ? "badge"
+                    : "badges"}{" "}
+                  earned
+                </div>
               </div>
             )}
 
