@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Card, Button, Badge } from "@/components/ui";
+import { Card, Button, Badge, Confetti } from "@/components/ui";
 import {
   Play,
   Shuffle,
@@ -28,7 +28,8 @@ import {
   type GameStats,
 } from "@/lib/games/economy";
 import { awardXp } from "@/lib/economy/actions";
-import { XP_REWARDS } from "@/lib/economy/constants";
+import { XP_REWARDS, levelFromXp } from "@/lib/economy/constants";
+import { useToast } from "@/lib/toast/context";
 
 interface WordScrambleGameProps {
   words: ScrambleWord[];
@@ -62,8 +63,10 @@ function shuffleLetters(word: string): string[] {
 }
 
 export function WordScrambleGame({ words }: WordScrambleGameProps) {
+  const { show: showToast } = useToast();
   const [gameState, setGameState] = useState<GameState>("idle");
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
+  const [confettiTrigger, setConfettiTrigger] = useState(false);
   const [stats, setStats] = useState<GameStats>({
     bestScore: 0,
     bestStreak: 0,
@@ -98,21 +101,40 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
     setStats(readGameStats(GAME_STORAGE_KEYS.wordScramble));
   }, []);
 
-  // Sync score to DB once when the game ends (auth kullanıcısı için).
   useEffect(() => {
     if (gameState !== "finished" || syncAttempted || score <= 0) return;
     setSyncAttempted(true);
     const cappedXp = Math.min(score, XP_REWARDS.gameMax);
     awardXp(cappedXp, "word-scramble")
       .then((result) => {
-        if (result) {
-          setXpSyncResult({ newAchievements: result.newAchievements });
+        if (!result) return;
+        setXpSyncResult({ newAchievements: result.newAchievements });
+        const { level: newLevel } = levelFromXp(result.newXp);
+        showToast({
+          title: `+${cappedXp} XP earned!`,
+          description: result.levelUp
+            ? `Leveled up to level ${newLevel}!`
+            : undefined,
+          variant: "reward",
+        });
+        if (result.newAchievements.length > 0) {
+          showToast({
+            title: "Achievement unlocked!",
+            description: `${result.newAchievements.length} new ${
+              result.newAchievements.length === 1 ? "badge" : "badges"
+            } earned`,
+            variant: "reward",
+          });
+        }
+        if (result.levelUp || result.newAchievements.length > 0) {
+          setConfettiTrigger(true);
+          window.setTimeout(() => setConfettiTrigger(false), 100);
         }
       })
       .catch(() => {
-        // Guest ya da network hatası — sessizce yut.
+        // Guest veya network hatası — sessizce yut.
       });
-  }, [gameState, syncAttempted, score]);
+  }, [gameState, syncAttempted, score, showToast]);
 
   useEffect(() => {
     if (gameState !== "playing") return;
@@ -352,6 +374,7 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
     const isNewBest = score > 0 && score >= stats.bestScore;
     return (
       <div className="max-w-2xl mx-auto space-y-6">
+        <Confetti trigger={confettiTrigger} />
         <Card className="p-8 lg:p-10 text-center relative overflow-hidden">
           <div className="absolute -top-16 -right-16 w-56 h-56 bg-reward-tint rounded-full opacity-60" />
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Card } from "@/components/ui";
 import { GameCard } from "@/components/domain";
-import { Shuffle, Link2, Gamepad2, Trophy, Brain } from "lucide-react";
+import { Shuffle, Link2, Gamepad2, Trophy, Brain, Heart, Volume2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Games — Learn English while having fun",
@@ -68,12 +68,34 @@ export default function GamesPage() {
         <GameCard
           href="/games/memory-match"
           title="Memory Match"
-          description="Flip cards and match word pairs from memory. Coming soon."
+          description="Flip cards and match each word with its meaning from memory."
           icon={Brain}
           accentColor="rare"
-          estimatedMinutes={4}
-          difficulty="hard"
-          available={false}
+          estimatedMinutes={3}
+          difficulty="medium"
+          available={true}
+        />
+
+        <GameCard
+          href="/games/hangman"
+          title="Hangman"
+          description="Classic word guessing. Six lives, one hidden word. How many can you solve?"
+          icon={Heart}
+          accentColor="action"
+          estimatedMinutes={3}
+          difficulty="medium"
+          available={true}
+        />
+
+        <GameCard
+          href="/games/listen-type"
+          title="Listen & Type"
+          description="Hear a word, type the spelling. Sharpen your ear and fingers in 60 seconds."
+          icon={Volume2}
+          accentColor="teal"
+          estimatedMinutes={2}
+          difficulty="medium"
+          available={true}
         />
       </div>
 

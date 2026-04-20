@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Search, Flame, Zap, Bell } from "lucide-react";
+import { Menu, Flame, Zap, Bell } from "lucide-react";
 import { Button } from "@/components/ui";
+import { SearchBar } from "./SearchBar";
+import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
 import type { AppUser } from "./AppShell";
 
@@ -24,17 +26,7 @@ export function Topbar({ onMenuClick, user }: TopbarProps) {
         </button>
 
         <div className="hidden md:flex flex-1 max-w-md">
-          <div className="relative w-full">
-            <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted"
-              strokeWidth={2.5}
-            />
-            <input
-              type="text"
-              placeholder="Search words, lessons…"
-              className="w-full bg-line-soft border border-line rounded-2xl py-2.5 pl-10 pr-4 text-sm placeholder:text-ink-muted focus:outline-none focus:bg-white focus:border-primary transition"
-            />
-          </div>
+          <SearchBar />
         </div>
 
         <div className="flex-1 md:hidden" />
@@ -72,10 +64,12 @@ export function Topbar({ onMenuClick, user }: TopbarProps) {
                 <span className="absolute top-2 right-2.5 w-2 h-2 bg-action rounded-full" />
               </button>
 
+              <ThemeToggle />
               <UserMenu user={user} />
             </>
           ) : (
             <>
+              <ThemeToggle />
               <Link
                 href="/login"
                 className="text-sm font-bold text-ink-soft hover:text-ink transition"

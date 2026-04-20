@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card, Badge, Button } from "@/components/ui";
+import { PronunciationButton } from "./PronunciationButton";
 import { Sparkles, ArrowRight } from "lucide-react";
 import type { WordOfTheDay } from "@/lib/word-of-the-day";
 
@@ -44,6 +45,7 @@ export function WordOfTheDayCard({ word }: { word: WordOfTheDay }) {
                   UK
                 </span>
                 <span className="text-sm font-medium">/{word.phonetic_uk}/</span>
+                <PronunciationButton text={word.word} accent="uk" />
               </div>
             )}
             {word.phonetic_us && (
@@ -52,6 +54,7 @@ export function WordOfTheDayCard({ word }: { word: WordOfTheDay }) {
                   US
                 </span>
                 <span className="text-sm font-medium">/{word.phonetic_us}/</span>
+                <PronunciationButton text={word.word} accent="us" />
               </div>
             )}
           </div>

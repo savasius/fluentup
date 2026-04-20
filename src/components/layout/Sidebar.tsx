@@ -11,6 +11,8 @@ import {
   GraduationCap,
   Sparkles,
   User,
+  FolderOpen,
+  Settings,
   Crown,
   HelpCircle,
   LogOut,
@@ -32,10 +34,12 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/practice", label: "Practice", icon: Dumbbell },
   { href: "/games", label: "Games", icon: Gamepad2 },
   { href: "/vocabulary", label: "Vocabulary", icon: BookOpen },
+  { href: "/collections", label: "Collections", icon: FolderOpen },
   { href: "/grammar", label: "Grammar", icon: Notebook },
   { href: "/lesson", label: "Lesson", icon: GraduationCap },
   { href: "/tutor", label: "AI Tutor", icon: Sparkles },
   { href: "/profile", label: "Profile", icon: User },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 interface SidebarProps {

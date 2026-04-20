@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Brand — Primary (blue) */
   --color-primary: #2563eb;
@@ -74,10 +76,88 @@
   ::selection {
     @apply bg-primary-tint text-primary-dark;
   }
+
+  /* Dark theme — CSS variable overrides. Bütün utility'ler var(--color-*)
+   * okuduğu için dark mode otomatik olarak tüm arayüze yayılır. Renk
+   * yoğunlukları kontrast/erişilebilirlik için dengelenmiştir. */
+  .dark {
+    --color-paper: #0f172a;
+    --color-ink: #f1f5f9;
+    --color-ink-soft: #cbd5e1;
+    --color-ink-muted: #94a3b8;
+    --color-line: #334155;
+    --color-line-soft: #1e293b;
+
+    --color-primary: #3b82f6;
+    --color-primary-dark: #60a5fa;
+    --color-primary-soft: #1e293b;
+    --color-primary-tint: #1e3a8a;
+
+    --color-action: #f87171;
+    --color-action-dark: #fca5a5;
+    --color-action-soft: #2a1616;
+    --color-action-tint: #3b1e1e;
+
+    --color-reward: #fbbf24;
+    --color-reward-dark: #fcd34d;
+    --color-reward-soft: #2a1f0b;
+    --color-reward-tint: #3b2a10;
+
+    --color-success: #34d399;
+    --color-success-dark: #6ee7b7;
+    --color-success-soft: #0d2920;
+    --color-success-tint: #134030;
+
+    --color-rare: #a78bfa;
+    --color-rare-dark: #c4b5fd;
+    --color-rare-soft: #1f1a2d;
+    --color-rare-tint: #2b2344;
+
+    --color-teal: #2dd4bf;
+    --color-teal-dark: #5eead4;
+
+    --shadow-solid-primary: 0 3px 0 0 #1e40af;
+    --shadow-solid-action: 0 3px 0 0 #991b1b;
+    --shadow-solid-reward: 0 3px 0 0 #92400e;
+    --shadow-solid-success: 0 3px 0 0 #065f46;
+    --shadow-solid-dark: 0 3px 0 0 #0f172a;
+    --shadow-soft: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+    --shadow-lift: 0 12px 28px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  .dark body {
+    background-color: var(--color-paper);
+  }
 }
 
 @layer utilities {
   .font-display {
     font-family: var(--font-display);
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(calc(100% + 1rem));
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.25s ease-out;
+  }
+
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
   }
 }

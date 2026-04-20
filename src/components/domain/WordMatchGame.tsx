@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Card, Button, Badge } from "@/components/ui";
+import { Card, Button, Badge, Confetti } from "@/components/ui";
 import {
   Play,
   Link2,
@@ -25,7 +25,8 @@ import {
   type GameStats,
 } from "@/lib/games/economy";
 import { awardXp } from "@/lib/economy/actions";
-import { XP_REWARDS } from "@/lib/economy/constants";
+import { XP_REWARDS, levelFromXp } from "@/lib/economy/constants";
+import { useToast } from "@/lib/toast/context";
 
 interface WordMatchGameProps {
   words: MatchWord[];
@@ -62,7 +63,9 @@ function pickRoundWords(pool: MatchWord[]): MatchWord[] {
 }
 
 export function WordMatchGame({ words }: WordMatchGameProps) {
+  const { show: showToast } = useToast();
   const [gameState, setGameState] = useState<GameState>("idle");
+  const [confettiTrigger, setConfettiTrigger] = useState(false);
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
   const [stats, setStats] = useState<GameStats>({
     bestScore: 0,
@@ -106,14 +109,34 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
     const cappedXp = Math.min(sanitizeScore(score), XP_REWARDS.gameMax);
     awardXp(cappedXp, "word-match")
       .then((result) => {
-        if (result) {
-          setXpSyncResult({ newAchievements: result.newAchievements });
+        if (!result) return;
+        setXpSyncResult({ newAchievements: result.newAchievements });
+        const { level: newLevel } = levelFromXp(result.newXp);
+        showToast({
+          title: `+${cappedXp} XP earned!`,
+          description: result.levelUp
+            ? `Leveled up to level ${newLevel}!`
+            : undefined,
+          variant: "reward",
+        });
+        if (result.newAchievements.length > 0) {
+          showToast({
+            title: "Achievement unlocked!",
+            description: `${result.newAchievements.length} new ${
+              result.newAchievements.length === 1 ? "badge" : "badges"
+            } earned`,
+            variant: "reward",
+          });
+        }
+        if (result.levelUp || result.newAchievements.length > 0) {
+          setConfettiTrigger(true);
+          window.setTimeout(() => setConfettiTrigger(false), 100);
         }
       })
       .catch(() => {
         // Guest veya network hatası.
       });
-  }, [gameState, syncAttempted, score]);
+  }, [gameState, syncAttempted, score, showToast]);
 
   useEffect(() => {
     if (gameState !== "playing") return;
@@ -327,6 +350,7 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
     const isNewBest = score > 0 && score >= stats.bestScore;
     return (
       <div className="max-w-2xl mx-auto space-y-6">
+        <Confetti trigger={confettiTrigger} />
         <Card className="p-8 lg:p-10 text-center relative overflow-hidden">
           <div className="absolute -top-16 -right-16 w-56 h-56 bg-reward-tint rounded-full opacity-60" />
 

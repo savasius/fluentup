@@ -1,6 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { ToastProvider } from "@/lib/toast/context";
+import { ThemeProvider } from "@/lib/theme/context";
+import { ToastContainer } from "@/components/ui";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -16,6 +19,15 @@ const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -39,6 +51,13 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://fluentupenglish.com"),
   alternates: {
     canonical: "/",
+  },
+  manifest: "/manifest.webmanifest",
+  applicationName: "FluentUp English",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FluentUp",
   },
   openGraph: {
     title: "FluentUp English — Learn English the fun way",
@@ -76,7 +95,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jakarta.variable} ${bricolage.variable}`}>
       <body>
-        {children}
+        <ThemeProvider>
+          <ToastProvider>
+            {children}
+            <ToastContainer />
+          </ToastProvider>
+        </ThemeProvider>
         <GoogleAnalytics />
       </body>
     </html>

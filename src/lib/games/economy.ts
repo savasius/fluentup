@@ -81,6 +81,8 @@ export const GAME_STORAGE_KEYS = {
   wordMatch: "fluentup-word-match-stats",
   sentenceBuilder: "fluentup-sentence-builder-stats",
   memoryMatch: "fluentup-memory-match-stats",
+  hangman: "fluentup-hangman-stats",
+  listenAndType: "fluentup-listen-and-type-stats",
 } as const;
 
 function emptyStats(): GameStats {

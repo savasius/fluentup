@@ -13,6 +13,7 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { grammarPageJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import type {
   CefrLevel,
   GrammarCategory,
@@ -82,6 +83,20 @@ export async function generateMetadata({
       title: `${topic.title} — FluentUp English`,
       description: topic.short_description,
       type: "article",
+      images: [
+        {
+          url: `/api/og/grammar/${slug}`,
+          width: 1200,
+          height: 630,
+          alt: `${topic.title} — FluentUp English`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${topic.title} — FluentUp English`,
+      description: topic.short_description,
+      images: [`/api/og/grammar/${slug}`],
     },
   };
 }
@@ -150,8 +165,28 @@ export default async function GrammarDetailPage({ params }: PageProps) {
 
   const topic = raw as unknown as GrammarTopicRow;
 
+  const jsonLd = [
+    grammarPageJsonLd({
+      title: topic.title,
+      description: topic.short_description,
+      slug: topic.slug,
+    }),
+    breadcrumbJsonLd([
+      { name: "Home", url: "https://fluentupenglish.com" },
+      { name: "Grammar", url: "https://fluentupenglish.com/grammar" },
+      {
+        name: topic.title,
+        url: `https://fluentupenglish.com/grammar/${topic.slug}`,
+      },
+    ]),
+  ];
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumb */}
       <Link
         href="/grammar"

@@ -1,5 +1,6 @@
 import { getCurrentUserWithProfile } from "@/lib/auth";
 import { AppShell } from "@/components/layout/AppShell";
+import { CommandPalette } from "@/components/layout/CommandPalette";
 
 export default async function MainLayout({
   children,
@@ -28,6 +29,7 @@ export default async function MainLayout({
       }
     >
       {children}
+      <CommandPalette />
     </AppShell>
   );
 }

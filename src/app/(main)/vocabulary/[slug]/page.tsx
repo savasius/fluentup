@@ -3,7 +3,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { createServerClient } from "@/lib/supabase";
 import { Card, Badge, Button } from "@/components/ui";
-import { Volume2, ArrowLeft, Sparkles, BookMarked } from "lucide-react";
+import { PronunciationButton } from "@/components/domain";
+import { ArrowLeft, Sparkles, BookMarked } from "lucide-react";
+import { wordPageJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { getRelatedWords } from "@/lib/vocabulary/related";
 import type {
   Database,
   CefrLevel,
@@ -65,6 +68,20 @@ export async function generateMetadata({
       title: `${word.word} — FluentUp English`,
       description: firstMeaning.slice(0, 200),
       type: "article",
+      images: [
+        {
+          url: `/api/og/word/${slug}`,
+          width: 1200,
+          height: 630,
+          alt: `${word.word} — FluentUp English`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${word.word} — FluentUp English`,
+      description: firstMeaning.slice(0, 200),
+      images: [`/api/og/word/${slug}`],
     },
   };
 }
@@ -88,9 +105,38 @@ export default async function WordDetailPage({ params }: PageProps) {
 
   const meanings = word.meanings;
   const collocations = word.collocations ?? [];
+  const firstDefinition = meanings[0]?.definition ?? "";
+
+  const relatedWords = await getRelatedWords({
+    currentSlug: word.slug,
+    cefrLevel: word.cefr_level,
+    partOfSpeech: word.part_of_speech,
+    synonyms: word.synonyms ?? [],
+  });
+
+  const jsonLd = [
+    wordPageJsonLd({
+      word: word.word,
+      definition: firstDefinition,
+      partOfSpeech: word.part_of_speech,
+      slug: word.slug,
+    }),
+    breadcrumbJsonLd([
+      { name: "Home", url: "https://fluentupenglish.com" },
+      { name: "Vocabulary", url: "https://fluentupenglish.com/vocabulary" },
+      {
+        name: word.word,
+        url: `https://fluentupenglish.com/vocabulary/${word.slug}`,
+      },
+    ]),
+  ];
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumb */}
       <Link
         href="/vocabulary"
@@ -124,14 +170,7 @@ export default async function WordDetailPage({ params }: PageProps) {
                   UK
                 </span>
                 <span className="font-medium">/{word.phonetic_uk}/</span>
-                <button
-                  className="w-8 h-8 bg-white hover:bg-primary-soft border border-line rounded-xl flex items-center justify-center text-ink-soft hover:text-primary transition"
-                  aria-label="Play UK pronunciation"
-                  disabled
-                  title="Audio coming soon"
-                >
-                  <Volume2 className="w-3.5 h-3.5" strokeWidth={2.5} />
-                </button>
+                <PronunciationButton text={word.word} accent="uk" />
               </div>
             )}
             {word.phonetic_us && (
@@ -140,14 +179,7 @@ export default async function WordDetailPage({ params }: PageProps) {
                   US
                 </span>
                 <span className="font-medium">/{word.phonetic_us}/</span>
-                <button
-                  className="w-8 h-8 bg-white hover:bg-primary-soft border border-line rounded-xl flex items-center justify-center text-ink-soft hover:text-primary transition"
-                  aria-label="Play US pronunciation"
-                  disabled
-                  title="Audio coming soon"
-                >
-                  <Volume2 className="w-3.5 h-3.5" strokeWidth={2.5} />
-                </button>
+                <PronunciationButton text={word.word} accent="us" />
               </div>
             )}
           </div>
@@ -236,6 +268,34 @@ export default async function WordDetailPage({ params }: PageProps) {
               </div>
             </Card>
           )}
+        </section>
+      )}
+
+      {/* Related words */}
+      {relatedWords.length > 0 && (
+        <section>
+          <h2 className="font-display text-lg font-extrabold text-ink mb-3">
+            Related words
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {relatedWords.map((rw) => (
+              <Link key={rw.slug} href={`/vocabulary/${rw.slug}`}>
+                <Card interactive className="p-4 h-full">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge color={levelColor[rw.cefr_level]} size="sm">
+                      {rw.cefr_level}
+                    </Badge>
+                  </div>
+                  <div className="font-display text-base font-extrabold text-ink">
+                    {rw.word}
+                  </div>
+                  <p className="mt-1 text-xs text-ink-soft line-clamp-2">
+                    {rw.firstMeaning}
+                  </p>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 
