@@ -16,6 +16,14 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import type { MatchWord } from "@/app/(main)/games/match/page";
 import type { CefrLevel } from "@/lib/supabase/database.types";
+import {
+  sanitizeScore,
+  readGameStats,
+  updateGameStats,
+  migrateLegacyStats,
+  GAME_STORAGE_KEYS,
+  type GameStats,
+} from "@/lib/games/economy";
 
 interface WordMatchGameProps {
   words: MatchWord[];
@@ -36,7 +44,7 @@ const LEVEL_FILTERS: Record<LevelFilter, CefrLevel[]> = {
   advanced: ["C1", "C2"],
 };
 
-const STORAGE_KEY = "fluentup-word-match-best";
+const LEGACY_STORAGE_KEY = "fluentup-word-match-best";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -54,7 +62,13 @@ function pickRoundWords(pool: MatchWord[]): MatchWord[] {
 export function WordMatchGame({ words }: WordMatchGameProps) {
   const [gameState, setGameState] = useState<GameState>("idle");
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
-  const [bestScore, setBestScore] = useState(0);
+  const [stats, setStats] = useState<GameStats>({
+    bestScore: 0,
+    bestStreak: 0,
+    totalGamesPlayed: 0,
+    totalXpLifetime: 0,
+    lastPlayedAt: 0,
+  });
 
   const [score, setScore] = useState(0);
   const [roundsCompleted, setRoundsCompleted] = useState(0);
@@ -76,26 +90,26 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
   }, [words, levelFilter]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = parseInt(stored, 10);
-      if (!isNaN(parsed)) setBestScore(parsed);
-    }
+    migrateLegacyStats(GAME_STORAGE_KEYS.wordMatch, LEGACY_STORAGE_KEY);
+    setStats(readGameStats(GAME_STORAGE_KEYS.wordMatch));
   }, []);
 
   useEffect(() => {
     if (gameState !== "playing") return;
     if (timeLeft <= 0) {
       setGameState("finished");
-      if (score > bestScore) {
-        setBestScore(score);
-        localStorage.setItem(STORAGE_KEY, String(score));
-      }
+      const safeScore = sanitizeScore(score);
+      const updated = updateGameStats(GAME_STORAGE_KEYS.wordMatch, {
+        score: safeScore,
+        maxStreak: 0,
+        xpEarned: safeScore,
+      });
+      setStats(updated);
       return;
     }
     const t = setTimeout(() => setTimeLeft((tl) => tl - 1), 1000);
     return () => clearTimeout(t);
-  }, [gameState, timeLeft, score, bestScore]);
+  }, [gameState, timeLeft, score]);
 
   const startNewRound = useCallback(() => {
     if (filteredPool.length < ROUND_SIZE) return;
@@ -190,10 +204,16 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
               as you can in 60 seconds.
             </p>
 
-            {bestScore > 0 && (
+            {stats.bestScore > 0 && (
               <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-reward-soft text-reward-dark rounded-full font-bold">
                 <Trophy className="w-4 h-4" strokeWidth={2.5} />
-                Best: {bestScore} points
+                Best: {stats.bestScore} points
+              </div>
+            )}
+
+            {stats.totalGamesPlayed > 0 && (
+              <div className="mt-3 text-xs text-ink-muted">
+                {stats.totalGamesPlayed} games played
               </div>
             )}
 
@@ -281,7 +301,7 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
   }
 
   if (gameState === "finished") {
-    const isNewBest = score > 0 && score >= bestScore;
+    const isNewBest = score > 0 && score >= stats.bestScore;
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <Card className="p-8 lg:p-10 text-center relative overflow-hidden">
@@ -328,10 +348,12 @@ export function WordMatchGame({ words }: WordMatchGameProps) {
               </div>
             </div>
 
-            {bestScore > 0 && !isNewBest && (
+            {stats.bestScore > 0 && !isNewBest && (
               <div className="mt-4 text-sm text-ink-muted">
                 Best:{" "}
-                <span className="font-bold text-ink">{bestScore} points</span>
+                <span className="font-bold text-ink">
+                  {stats.bestScore} points
+                </span>
               </div>
             )}
 

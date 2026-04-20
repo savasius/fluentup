@@ -18,6 +18,15 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import type { ScrambleWord } from "@/app/(main)/games/word-scramble/page";
 import type { CefrLevel } from "@/lib/supabase/database.types";
+import {
+  calculateRoundXp,
+  capStreakDisplay,
+  readGameStats,
+  updateGameStats,
+  migrateLegacyStats,
+  GAME_STORAGE_KEYS,
+  type GameStats,
+} from "@/lib/games/economy";
 
 interface WordScrambleGameProps {
   words: ScrambleWord[];
@@ -27,8 +36,6 @@ type GameState = "idle" | "playing" | "finished";
 type LevelFilter = "all" | "beginner" | "intermediate" | "advanced";
 
 const ROUND_DURATION = 60;
-const BASE_XP = 10;
-const MAX_STREAK_BONUS = 20;
 const HINT_DELAY = 20;
 
 const LEVEL_FILTERS: Record<LevelFilter, CefrLevel[]> = {
@@ -38,7 +45,7 @@ const LEVEL_FILTERS: Record<LevelFilter, CefrLevel[]> = {
   advanced: ["C1", "C2"],
 };
 
-const STORAGE_KEY = "fluentup-word-scramble-best";
+const LEGACY_STORAGE_KEY = "fluentup-word-scramble-best";
 
 function shuffleLetters(word: string): string[] {
   const letters = word.toUpperCase().split("");
@@ -55,7 +62,14 @@ function shuffleLetters(word: string): string[] {
 export function WordScrambleGame({ words }: WordScrambleGameProps) {
   const [gameState, setGameState] = useState<GameState>("idle");
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
-  const [bestScore, setBestScore] = useState(0);
+  const [stats, setStats] = useState<GameStats>({
+    bestScore: 0,
+    bestStreak: 0,
+    totalGamesPlayed: 0,
+    totalXpLifetime: 0,
+    lastPlayedAt: 0,
+  });
+  const [maxStreakThisGame, setMaxStreakThisGame] = useState(0);
 
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -74,27 +88,26 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
   }, [words, levelFilter]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = parseInt(stored, 10);
-      if (!isNaN(parsed)) setBestScore(parsed);
-    }
+    migrateLegacyStats(GAME_STORAGE_KEYS.wordScramble, LEGACY_STORAGE_KEY);
+    setStats(readGameStats(GAME_STORAGE_KEYS.wordScramble));
   }, []);
 
   useEffect(() => {
     if (gameState !== "playing") return;
     if (timeLeft <= 0) {
       setGameState("finished");
-      if (score > bestScore) {
-        setBestScore(score);
-        localStorage.setItem(STORAGE_KEY, String(score));
-      }
+      const updated = updateGameStats(GAME_STORAGE_KEYS.wordScramble, {
+        score,
+        maxStreak: maxStreakThisGame,
+        xpEarned: score,
+      });
+      setStats(updated);
       return;
     }
 
     const t = setTimeout(() => setTimeLeft((tl) => tl - 1), 1000);
     return () => clearTimeout(t);
-  }, [gameState, timeLeft, score, bestScore]);
+  }, [gameState, timeLeft, score, maxStreakThisGame]);
 
   useEffect(() => {
     if (gameState !== "playing" || !currentWord) return;
@@ -122,6 +135,7 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
     if (filteredWords.length === 0) return;
     setScore(0);
     setStreak(0);
+    setMaxStreakThisGame(0);
     setTimeLeft(ROUND_DURATION);
     setWordsPlayed(0);
     setJustCorrect(false);
@@ -134,30 +148,41 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
 
   useEffect(() => {
     if (
-      gameState === "playing" &&
-      currentWord &&
-      currentAttempt === targetWord
+      gameState !== "playing" ||
+      !currentWord ||
+      justCorrect ||
+      targetWord.length === 0 ||
+      selected.length !== targetWord.length ||
+      currentAttempt !== targetWord
     ) {
-      const streakBonus = Math.min(streak * 2, MAX_STREAK_BONUS);
-      const hintPenalty = hintShown ? 0.5 : 1;
-      const earned = Math.round((BASE_XP + streakBonus) * hintPenalty);
-
-      setScore((s) => s + earned);
-      setStreak((s) => s + 1);
-      setWordsPlayed((w) => w + 1);
-      setJustCorrect(true);
-
-      const t = setTimeout(() => {
-        setJustCorrect(false);
-        pickNewWord();
-      }, 600);
-      return () => clearTimeout(t);
+      return;
     }
+
+    const earned = calculateRoundXp({
+      wordLength: currentWord.word.length,
+      streak,
+      hintUsed: hintShown,
+    });
+    const newStreak = streak + 1;
+
+    setScore((s) => s + earned);
+    setStreak(newStreak);
+    setMaxStreakThisGame((m) => Math.max(m, newStreak));
+    setWordsPlayed((w) => w + 1);
+    setJustCorrect(true);
+
+    const t = setTimeout(() => {
+      setJustCorrect(false);
+      pickNewWord();
+    }, 600);
+    return () => clearTimeout(t);
   }, [
     currentAttempt,
     targetWord,
     gameState,
     currentWord,
+    justCorrect,
+    selected.length,
     streak,
     hintShown,
     pickNewWord,
@@ -209,10 +234,17 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
               runs out. Build streaks for bonus XP.
             </p>
 
-            {bestScore > 0 && (
+            {stats.bestScore > 0 && (
               <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-reward-soft text-reward-dark rounded-full font-bold">
                 <Trophy className="w-4 h-4" strokeWidth={2.5} />
-                Best: {bestScore} XP
+                Best: {stats.bestScore} XP
+              </div>
+            )}
+
+            {stats.totalGamesPlayed > 0 && (
+              <div className="mt-3 text-xs text-ink-muted">
+                {stats.totalGamesPlayed} games played · Best streak:{" "}
+                {stats.bestStreak}×
               </div>
             )}
 
@@ -293,7 +325,7 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
   }
 
   if (gameState === "finished") {
-    const isNewBest = score > 0 && score >= bestScore;
+    const isNewBest = score > 0 && score >= stats.bestScore;
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <Card className="p-8 lg:p-10 text-center relative overflow-hidden">
@@ -340,9 +372,10 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
               </div>
             </div>
 
-            {bestScore > 0 && !isNewBest && (
+            {stats.bestScore > 0 && !isNewBest && (
               <div className="mt-4 text-sm text-ink-muted">
-                Best: <span className="font-bold text-ink">{bestScore} XP</span>
+                Best:{" "}
+                <span className="font-bold text-ink">{stats.bestScore} XP</span>
               </div>
             )}
 
@@ -411,7 +444,7 @@ export function WordScrambleGame({ words }: WordScrambleGameProps) {
             Streak
           </div>
           <div className="mt-1 font-display text-3xl font-extrabold text-primary-dark tabular-nums">
-            {streak}×
+            {capStreakDisplay(streak)}×
           </div>
         </Card>
       </div>
