@@ -8,3 +8,6 @@ export { GrammarFilters } from "./GrammarFilters";
 export { GameCard } from "./GameCard";
 export { WordScrambleGame } from "./WordScrambleGame";
 export { WordMatchGame } from "./WordMatchGame";
+export { SentenceBuilderGame } from "./SentenceBuilderGame";
+export { PlacementQuiz } from "./PlacementQuiz";
+export { ProfileForm } from "./ProfileForm";

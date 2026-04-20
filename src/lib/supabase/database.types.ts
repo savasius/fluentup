@@ -77,6 +77,7 @@ export interface Database {
   public: {
     Tables: {
       words: {
+        Relationships: [];
         Row: {
           id: string;
           slug: string;
@@ -109,6 +110,7 @@ export interface Database {
       };
 
       grammar_topics: {
+        Relationships: [];
         Row: {
           id: string;
           slug: string;
@@ -141,6 +143,7 @@ export interface Database {
       };
 
       lessons: {
+        Relationships: [];
         Row: {
           id: string;
           slug: string;
@@ -170,6 +173,7 @@ export interface Database {
       };
 
       profiles: {
+        Relationships: [];
         Row: {
           id: string;
           username: string | null;
@@ -198,6 +202,7 @@ export interface Database {
       };
 
       user_progress: {
+        Relationships: [];
         Row: {
           id: string;
           user_id: string;
@@ -226,6 +231,7 @@ export interface Database {
       };
 
       user_lesson_completions: {
+        Relationships: [];
         Row: {
           id: string;
           user_id: string;
@@ -247,5 +253,7 @@ export interface Database {
         >;
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
   };
 }

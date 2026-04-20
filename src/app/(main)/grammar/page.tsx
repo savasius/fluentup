@@ -46,10 +46,10 @@ export default async function GrammarPage({ searchParams }: PageProps) {
     .order("title", { ascending: true });
 
   if (params.level && params.level !== "all") {
-    query = query.eq("cefr_level", params.level);
+    query = query.eq("cefr_level", params.level as CefrLevel);
   }
   if (params.category && params.category !== "all") {
-    query = query.eq("category", params.category);
+    query = query.eq("category", params.category as GrammarCategory);
   }
 
   const { data: raw, error } = await query;

@@ -14,9 +14,12 @@ import {
   Crown,
   HelpCircle,
   LogOut,
+  LogIn,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { signOut } from "@/lib/auth/actions";
+import type { AppUser } from "./AppShell";
 
 type NavItem = {
   href: string;
@@ -38,9 +41,10 @@ const NAV_ITEMS: NavItem[] = [
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  user: AppUser | null;
 }
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -60,7 +64,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Logo */}
         <div className="px-6 py-6 border-b border-line-soft">
           <Link
             href="/"
@@ -83,8 +86,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </Link>
         </div>
 
-        {/* Nav items */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -114,36 +116,71 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Premium upsell card */}
-        <div className="p-3">
-          <div className="relative overflow-hidden rounded-2xl border border-primary-tint bg-primary-soft p-4">
-            <Crown
-              className="absolute top-2 right-2 w-5 h-5 text-primary opacity-70"
-              fill="#FBBF24"
-              strokeWidth={2}
-            />
-            <div className="font-display text-xs font-extrabold text-primary-dark">
-              Go Premium
-            </div>
-            <p className="mt-0.5 text-[11px] text-ink-soft font-medium leading-snug mb-2">
-              Unlock advanced drills
-            </p>
-            <div className="h-1.5 w-full bg-white rounded-full overflow-hidden">
-              <div className="h-full w-[65%] bg-primary rounded-full" />
+        {user ? (
+          <div className="p-3">
+            <div className="relative overflow-hidden rounded-2xl border border-primary-tint bg-primary-soft p-4">
+              <Crown
+                className="absolute top-2 right-2 w-5 h-5 text-primary opacity-70"
+                fill="#FBBF24"
+                strokeWidth={2}
+              />
+              <div className="font-display text-xs font-extrabold text-primary-dark">
+                Go Premium
+              </div>
+              <p className="mt-0.5 text-[11px] text-ink-soft font-medium leading-snug mb-2">
+                Unlock advanced drills
+              </p>
+              <div className="h-1.5 w-full bg-white rounded-full overflow-hidden">
+                <div className="h-full w-[65%] bg-primary rounded-full" />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="p-3">
+            <Link
+              href="/signup"
+              onClick={onClose}
+              className="block rounded-2xl bg-primary p-4 text-white shadow-solid-primary hover:-translate-y-0.5 transition"
+            >
+              <div className="font-display text-sm font-extrabold">
+                Join FluentUp
+              </div>
+              <p className="mt-0.5 text-[11px] opacity-90 leading-snug">
+                Free forever. Save your progress.
+              </p>
+            </Link>
+          </div>
+        )}
 
-        {/* Footer links */}
         <div className="px-3 pb-4 pt-3 space-y-1 border-t border-line-soft">
-          <button className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft">
+          <Link
+            href="/privacy"
+            onClick={onClose}
+            className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft"
+          >
             <HelpCircle className="w-[18px] h-[18px]" strokeWidth={2} />
-            Help
-          </button>
-          <button className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft">
-            <LogOut className="w-[18px] h-[18px]" strokeWidth={2} />
-            Logout
-          </button>
+            Help & legal
+          </Link>
+          {user ? (
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft"
+              >
+                <LogOut className="w-[18px] h-[18px]" strokeWidth={2} />
+                Logout
+              </button>
+            </form>
+          ) : (
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft"
+            >
+              <LogIn className="w-[18px] h-[18px]" strokeWidth={2} />
+              Sign in
+            </Link>
+          )}
         </div>
       </aside>
     </>

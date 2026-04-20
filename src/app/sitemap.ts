@@ -23,11 +23,20 @@ const STATIC_ROUTES = [
     priority: 0.7,
   },
   { path: "/games/match", changeFreq: "monthly" as const, priority: 0.7 },
+  {
+    path: "/games/sentence-builder",
+    changeFreq: "monthly" as const,
+    priority: 0.7,
+  },
   { path: "/vocabulary", changeFreq: "weekly" as const, priority: 0.9 },
   { path: "/grammar", changeFreq: "weekly" as const, priority: 0.9 },
   { path: "/lesson", changeFreq: "weekly" as const, priority: 0.8 },
   { path: "/tutor", changeFreq: "weekly" as const, priority: 0.7 },
   { path: "/profile", changeFreq: "monthly" as const, priority: 0.5 },
+  { path: "/login", changeFreq: "yearly" as const, priority: 0.3 },
+  { path: "/signup", changeFreq: "yearly" as const, priority: 0.3 },
+  { path: "/privacy", changeFreq: "yearly" as const, priority: 0.2 },
+  { path: "/terms", changeFreq: "yearly" as const, priority: 0.2 },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

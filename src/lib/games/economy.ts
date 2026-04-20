@@ -79,6 +79,8 @@ export function sanitizeScore(score: number): number {
 export const GAME_STORAGE_KEYS = {
   wordScramble: "fluentup-word-scramble-stats",
   wordMatch: "fluentup-word-match-stats",
+  sentenceBuilder: "fluentup-sentence-builder-stats",
+  memoryMatch: "fluentup-memory-match-stats",
 } as const;
 
 function emptyStats(): GameStats {

@@ -54,10 +54,10 @@ export default async function VocabularyPage({ searchParams }: PageProps) {
     .order("word", { ascending: true });
 
   if (params.level && params.level !== "all") {
-    query = query.eq("cefr_level", params.level);
+    query = query.eq("cefr_level", params.level as CefrLevel);
   }
   if (params.rarity && params.rarity !== "all") {
-    query = query.eq("rarity", params.rarity);
+    query = query.eq("rarity", params.rarity as WordRarity);
   }
 
   const { data: wordsRaw, error } = await query;

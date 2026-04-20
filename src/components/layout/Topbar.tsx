@@ -1,16 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import { Menu, Search, Flame, Zap, Bell } from "lucide-react";
+import { Button } from "@/components/ui";
+import { UserMenu } from "./UserMenu";
+import type { AppUser } from "./AppShell";
 
 interface TopbarProps {
   onMenuClick: () => void;
+  user: AppUser | null;
 }
 
-export function Topbar({ onMenuClick }: TopbarProps) {
+export function Topbar({ onMenuClick, user }: TopbarProps) {
   return (
     <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-line">
       <div className="h-16 px-5 lg:px-8 flex items-center gap-3 lg:gap-4">
-        {/* Mobile menu toggle */}
         <button
           onClick={onMenuClick}
           className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-ink-soft hover:bg-line-soft"
@@ -19,7 +23,6 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <Menu className="w-5 h-5" strokeWidth={2.5} />
         </button>
 
-        {/* Search */}
         <div className="hidden md:flex flex-1 max-w-md">
           <div className="relative w-full">
             <Search
@@ -36,39 +39,56 @@ export function Topbar({ onMenuClick }: TopbarProps) {
 
         <div className="flex-1 md:hidden" />
 
-        {/* Streak + XP + Bell + Avatar */}
         <div className="flex items-center gap-2 lg:gap-3">
-          <div className="flex items-center gap-1.5 bg-reward-soft border border-reward-tint px-2.5 py-1.5 rounded-xl">
-            <Flame
-              className="w-4 h-4 text-reward"
-              fill="#F59E0B"
-              strokeWidth={2.5}
-            />
-            <span className="font-extrabold text-sm text-reward-dark">12</span>
-          </div>
+          {user ? (
+            <>
+              <div className="flex items-center gap-1.5 bg-reward-soft border border-reward-tint px-2.5 py-1.5 rounded-xl">
+                <Flame
+                  className="w-4 h-4 text-reward"
+                  fill="#F59E0B"
+                  strokeWidth={2.5}
+                />
+                <span className="font-extrabold text-sm text-reward-dark tabular-nums">
+                  {user.currentStreak}
+                </span>
+              </div>
 
-          <div className="flex items-center gap-1.5 bg-primary-soft border border-primary-tint px-2.5 py-1.5 rounded-xl">
-            <Zap
-              className="w-4 h-4 text-primary"
-              fill="#2563EB"
-              strokeWidth={2.5}
-            />
-            <span className="font-extrabold text-sm text-primary-dark">
-              2,840
-            </span>
-          </div>
+              <div className="flex items-center gap-1.5 bg-primary-soft border border-primary-tint px-2.5 py-1.5 rounded-xl">
+                <Zap
+                  className="w-4 h-4 text-primary"
+                  fill="#2563EB"
+                  strokeWidth={2.5}
+                />
+                <span className="font-extrabold text-sm text-primary-dark tabular-nums">
+                  {user.totalXp.toLocaleString("en-US")}
+                </span>
+              </div>
 
-          <button
-            className="hidden lg:flex w-10 h-10 items-center justify-center rounded-xl hover:bg-line-soft text-ink-soft relative"
-            aria-label="Notifications"
-          >
-            <Bell className="w-5 h-5" strokeWidth={2.5} />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-action rounded-full" />
-          </button>
+              <button
+                className="hidden lg:flex w-10 h-10 items-center justify-center rounded-xl hover:bg-line-soft text-ink-soft relative"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5" strokeWidth={2.5} />
+                <span className="absolute top-2 right-2.5 w-2 h-2 bg-action rounded-full" />
+              </button>
 
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm shadow-solid-primary">
-            AY
-          </div>
+              <UserMenu user={user} />
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-bold text-ink-soft hover:text-ink transition"
+              >
+                Sign in
+              </Link>
+              <Link href="/signup">
+                <Button variant="primary" shape="pill" size="sm">
+                  Sign up
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
