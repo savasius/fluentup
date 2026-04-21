@@ -7,6 +7,8 @@ import { PronunciationButton } from "@/components/domain";
 import { ArrowLeft, Sparkles, BookMarked } from "lucide-react";
 import { wordPageJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { getRelatedWords } from "@/lib/vocabulary/related";
+import { getCurrentUser } from "@/lib/auth";
+import { WordFlashcardButton } from "@/components/domain/WordFlashcardButton";
 import type {
   Database,
   CefrLevel,
@@ -107,6 +109,8 @@ export default async function WordDetailPage({ params }: PageProps) {
   const collocations = word.collocations ?? [];
   const firstDefinition = meanings[0]?.definition ?? "";
 
+  const user = await getCurrentUser();
+
   const relatedWords = await getRelatedWords({
     currentSlug: word.slug,
     cefrLevel: word.cefr_level,
@@ -184,6 +188,21 @@ export default async function WordDetailPage({ params }: PageProps) {
             )}
           </div>
         </div>
+
+        {user && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <WordFlashcardButton
+              word={word.word}
+              wordSlug={word.slug}
+              definition={firstDefinition}
+            />
+            <Link href="/flashcards">
+              <Button variant="ghost" shape="pill" size="md">
+                Due flashcards
+              </Button>
+            </Link>
+          </div>
+        )}
       </Card>
 
       {/* Meanings */}

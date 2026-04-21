@@ -73,6 +73,14 @@ export interface QuizQuestion {
   explanation?: string;
 }
 
+/** Lesson quiz JSON stored in `lessons.quiz_questions` */
+export interface LessonQuizQuestion {
+  question: string;
+  options: string[];
+  correct_index: number;
+  explanation: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -148,28 +156,78 @@ export interface Database {
           id: string;
           slug: string;
           title: string;
-          description: string | null;
+          description: string;
           cefr_level: CefrLevel;
-          unit_number: number;
-          lesson_number: number;
-          word_ids: string[];
-          grammar_topic_ids: string[];
-          quiz_data: Json;
+          order_index: number;
+          intro_text: string;
+          word_slugs: string[];
+          grammar_topic_slug: string | null;
+          grammar_tip: string | null;
+          grammar_examples: string[] | null;
+          quiz_questions: LessonQuizQuestion[];
           xp_reward: number;
           estimated_minutes: number;
           published: boolean;
           created_at: string;
-          updated_at: string;
         };
         Insert: Omit<
           Database["public"]["Tables"]["lessons"]["Row"],
-          "id" | "created_at" | "updated_at"
+          "id" | "created_at"
         > & {
           id?: string;
           created_at?: string;
-          updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["lessons"]["Insert"]>;
+      };
+
+      user_lesson_progress: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          lesson_slug: string;
+          status: "in_progress" | "completed";
+          current_step: number;
+          quiz_score: number | null;
+          quiz_total: number | null;
+          started_at: string;
+          completed_at: string | null;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["user_lesson_progress"]["Row"],
+          "id" | "started_at"
+        > & {
+          id?: string;
+          started_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["user_lesson_progress"]["Insert"]
+        >;
+      };
+
+      flashcard_reviews: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          word_slug: string;
+          easiness: number;
+          interval_days: number;
+          repetitions: number;
+          next_review_at: string;
+          last_reviewed_at: string | null;
+          created_at: string;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["flashcard_reviews"]["Row"],
+          "id" | "created_at"
+        > & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["flashcard_reviews"]["Insert"]
+        >;
       };
 
       profiles: {

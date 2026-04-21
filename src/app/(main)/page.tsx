@@ -130,6 +130,31 @@ export default async function DashboardPage() {
   const dailyXpEarned =
     profile?.daily_xp_date === today ? profile.daily_xp_earned ?? 0 : 0;
 
+  let inProgressLesson: { slug: string; title: string } | null = null;
+  if (user) {
+    const { data: prog } = await supabase
+      .from("user_lesson_progress")
+      .select("lesson_slug")
+      .eq("user_id", user.id)
+      .eq("status", "in_progress")
+      .maybeSingle();
+
+    const slug = (prog as { lesson_slug: string } | null)?.lesson_slug;
+    if (slug) {
+      const { data: lessonRow } = await supabase
+        .from("lessons")
+        .select("slug, title")
+        .eq("slug", slug)
+        .eq("published", true)
+        .maybeSingle();
+
+      const lesson = lessonRow as { slug: string; title: string } | null;
+      if (lesson) {
+        inProgressLesson = { slug: lesson.slug, title: lesson.title };
+      }
+    }
+  }
+
   return (
     <UserDashboard
       user={{
@@ -153,6 +178,7 @@ export default async function DashboardPage() {
       totalGrammar={grammarCount ?? 0}
       recentWords={recentWords}
       featuredGrammar={featuredGrammar}
+      inProgressLesson={inProgressLesson}
     />
   );
 }

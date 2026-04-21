@@ -2,7 +2,17 @@ import type { Metadata } from "next";
 import { Card } from "@/components/ui";
 import { GameCard } from "@/components/domain";
 import { createServerClient } from "@/lib/supabase";
-import { Shuffle, Link2, Gamepad2, Trophy, Brain, Heart, Volume2 } from "lucide-react";
+import {
+  Shuffle,
+  Link2,
+  Gamepad2,
+  Trophy,
+  Brain,
+  Heart,
+  Volume2,
+  BookOpen,
+  Zap,
+} from "lucide-react";
 
 export const revalidate = 300;
 
@@ -113,16 +123,51 @@ export default async function GamesPage() {
           available={true}
           statLine={statLine}
         />
+
+        <GameCard
+          href="/games/word-chain"
+          title="Word Chain"
+          description="Link words by last letter and first letter. Beat the clock and build streak XP."
+          icon={Link2}
+          accentColor="primary"
+          estimatedMinutes={2}
+          difficulty="medium"
+          available={true}
+          statLine={statLine}
+        />
+
+        <GameCard
+          href="/games/speed-reading"
+          title="Speed Reading"
+          description="Read a short passage, then answer timed comprehension questions."
+          icon={BookOpen}
+          accentColor="success"
+          estimatedMinutes={4}
+          difficulty="medium"
+          available={true}
+          statLine={statLine}
+        />
+
+        <GameCard
+          href="/games/grammar-challenge"
+          title="Grammar Challenge"
+          description="Random grammar quiz questions with a 60-second clock and streak bonuses."
+          icon={Zap}
+          accentColor="reward"
+          estimatedMinutes={2}
+          difficulty="hard"
+          available={true}
+          statLine={statLine}
+        />
       </div>
 
       <Card className="p-5 lg:p-6 bg-gradient-to-r from-primary-tint to-primary-soft border-primary-tint">
         <h2 className="font-display text-lg font-extrabold text-ink">
-          More games coming soon
+          Nine ways to practice
         </h2>
         <p className="mt-1 text-sm text-ink-soft max-w-2xl">
-          We add new games every month. Each one is designed to reinforce a
-          different aspect of English — vocabulary, grammar, spelling, or
-          listening. All free, no sign-up needed.
+          Vocabulary, grammar, listening, reading — pick a mode that matches
+          your mood. All free; sign in to save XP and streaks.
         </p>
       </Card>
     </div>

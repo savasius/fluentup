@@ -10,6 +10,7 @@ import {
   BookOpen,
   Gamepad2,
   Sparkles,
+  GraduationCap,
 } from "lucide-react";
 import type { WordOfTheDay } from "@/lib/word-of-the-day";
 import type { CefrLevel } from "@/lib/supabase/database.types";
@@ -34,6 +35,7 @@ interface Props {
   totalGrammar: number;
   recentWords: GuestPreviewWord[];
   featuredGrammar: FeaturedGrammarTopic[];
+  inProgressLesson: { slug: string; title: string } | null;
 }
 
 export function UserDashboard({
@@ -44,6 +46,7 @@ export function UserDashboard({
   totalGrammar,
   recentWords,
   featuredGrammar,
+  inProgressLesson,
 }: Props) {
   const { level, progress, nextLevelXp } = levelFromXp(profile.totalXp);
   const dailyProgress = Math.min(
@@ -133,7 +136,7 @@ export function UserDashboard({
             </div>
           </div>
           <div>
-            <div className="font-display text-3xl font-extrabold text-reward-dark">6</div>
+            <div className="font-display text-3xl font-extrabold text-reward-dark">9</div>
             <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">Games</div>
           </div>
           <div>
@@ -142,6 +145,26 @@ export function UserDashboard({
           </div>
         </div>
       </Card>
+
+      {inProgressLesson && (
+        <Card className="p-5 bg-primary-soft border-primary">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-widest text-primary-dark">
+                Continue where you left off
+              </div>
+              <div className="mt-1 font-display text-lg font-extrabold text-ink">
+                {inProgressLesson.title}
+              </div>
+            </div>
+            <Link href={`/lesson/${inProgressLesson.slug}`}>
+              <Button variant="primary" shape="pill" icon={GraduationCap}>
+                Resume →
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      )}
 
       {/* DAILY GOAL */}
       <Card className="p-5 lg:p-6">

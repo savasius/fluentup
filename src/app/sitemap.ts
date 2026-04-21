@@ -4,6 +4,7 @@ import { COLLECTIONS } from "@/lib/collections/data";
 
 type WordSitemapRow = { slug: string; updated_at: string };
 type GrammarSitemapRow = { slug: string; updated_at: string };
+type LessonSitemapRow = { slug: string; created_at: string };
 
 const BASE_URL = "https://fluentupenglish.com";
 
@@ -44,7 +45,28 @@ const STATIC_ROUTES = [
     changeFreq: "monthly" as const,
     priority: 0.7,
   },
-  { path: "/lesson", changeFreq: "weekly" as const, priority: 0.8 },
+  {
+    path: "/games/word-chain",
+    changeFreq: "monthly" as const,
+    priority: 0.7,
+  },
+  {
+    path: "/games/speed-reading",
+    changeFreq: "monthly" as const,
+    priority: 0.7,
+  },
+  {
+    path: "/games/grammar-challenge",
+    changeFreq: "monthly" as const,
+    priority: 0.7,
+  },
+  { path: "/flashcards", changeFreq: "weekly" as const, priority: 0.5 },
+  {
+    path: "/profile/certificates",
+    changeFreq: "monthly" as const,
+    priority: 0.3,
+  },
+  { path: "/lesson", changeFreq: "weekly" as const, priority: 0.9 },
   { path: "/tutor", changeFreq: "weekly" as const, priority: 0.7 },
   { path: "/profile", changeFreq: "monthly" as const, priority: 0.5 },
   { path: "/login", changeFreq: "yearly" as const, priority: 0.4 },
@@ -72,16 +94,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let wordEntries: MetadataRoute.Sitemap = [];
   let grammarEntries: MetadataRoute.Sitemap = [];
+  let lessonEntries: MetadataRoute.Sitemap = [];
 
   try {
     const supabase = await createServerClient();
 
-    const [wordsResult, grammarResult] = await Promise.all([
+    const [wordsResult, grammarResult, lessonsResult] = await Promise.all([
       supabase.from("words").select("slug, updated_at").eq("published", true),
       supabase
         .from("grammar_topics")
         .select("slug, updated_at")
         .eq("published", true),
+      supabase.from("lessons").select("slug, created_at").eq("published", true),
     ]);
 
     const words = wordsResult.data as WordSitemapRow[] | null;
@@ -103,9 +127,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
       }));
     }
+
+    const lessonRows = lessonsResult.data as LessonSitemapRow[] | null;
+    if (lessonRows) {
+      lessonEntries = lessonRows.map((l) => ({
+        url: `${BASE_URL}/lesson/${l.slug}`,
+        lastModified: new Date(l.created_at),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
+    }
   } catch (err) {
     console.error("Sitemap: failed to fetch dynamic entries", err);
   }
 
-  return [...staticEntries, ...collectionEntries, ...wordEntries, ...grammarEntries];
+  return [
+    ...staticEntries,
+    ...collectionEntries,
+    ...wordEntries,
+    ...grammarEntries,
+    ...lessonEntries,
+  ];
 }

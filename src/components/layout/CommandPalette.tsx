@@ -12,6 +12,11 @@ import {
   Sparkles,
   FolderOpen,
   Settings,
+  GraduationCap,
+  Layers,
+  Link2,
+  Timer,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { trackEvent } from "@/lib/analytics/events";
@@ -75,6 +80,20 @@ export function CommandPalette() {
       title: "Browse Grammar",
       icon: BookOpen,
       action: () => router.push("/grammar"),
+      group: "Navigate",
+    },
+    {
+      id: "lessons",
+      title: "Browse lessons",
+      icon: GraduationCap,
+      action: () => router.push("/lesson"),
+      group: "Navigate",
+    },
+    {
+      id: "flashcards",
+      title: "Review flashcards",
+      icon: Layers,
+      action: () => router.push("/flashcards"),
       group: "Navigate",
     },
     {
@@ -158,6 +177,30 @@ export function CommandPalette() {
       subtitle: "Listen and spell",
       icon: Sparkles,
       action: () => router.push("/games/listen-type"),
+      group: "Actions",
+    },
+    {
+      id: "word-chain",
+      title: "Word Chain",
+      subtitle: "Link words by last letter",
+      icon: Link2,
+      action: () => router.push("/games/word-chain"),
+      group: "Actions",
+    },
+    {
+      id: "speed-reading",
+      title: "Speed Reading",
+      subtitle: "Passage + comprehension",
+      icon: Timer,
+      action: () => router.push("/games/speed-reading"),
+      group: "Actions",
+    },
+    {
+      id: "grammar-challenge",
+      title: "Grammar Challenge",
+      subtitle: "Timed grammar quiz",
+      icon: Zap,
+      action: () => router.push("/games/grammar-challenge"),
       group: "Actions",
     },
   ];
