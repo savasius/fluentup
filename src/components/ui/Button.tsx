@@ -69,7 +69,8 @@ export function Button({
     <button
       className={cn(
         "font-bold inline-flex items-center justify-center gap-2 tracking-wide transition-all duration-150",
-        "disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0",
+        "active:scale-[0.98] transition-transform",
+        "disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:scale-100",
         variantStyles[variant],
         sizeStyles[size],
         shapeStyles[shape],

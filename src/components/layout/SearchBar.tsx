@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Search, BookMarked, BookOpen } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { trackEvent } from "@/lib/analytics/events";
 
 interface WordResult {
@@ -106,8 +107,9 @@ export function SearchBar() {
       {open && query.length >= 2 && (
         <div className="absolute top-full mt-2 left-0 right-0 bg-white border border-line rounded-2xl shadow-lift z-50 overflow-hidden">
           {loading && (
-            <div className="p-4 text-sm text-ink-muted text-center">
-              Searching…
+            <div className="p-4 flex items-center justify-center gap-2 text-sm text-ink-muted">
+              <Spinner size="sm" />
+              <span>Searching…</span>
             </div>
           )}
 

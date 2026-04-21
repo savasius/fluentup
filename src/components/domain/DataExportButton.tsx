@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui";
+import { Button, Spinner } from "@/components/ui";
 import { Download } from "lucide-react";
 import { useToast } from "@/lib/toast/context";
 import { exportAccountData } from "@/lib/account/actions";
@@ -57,7 +57,14 @@ export function DataExportButton() {
       onClick={handleExport}
       disabled={loading}
     >
-      {loading ? "Preparing…" : "Download my data"}
+      {loading ? (
+        <span className="inline-flex items-center gap-2">
+          <Spinner size="sm" variant="white" />
+          Preparing…
+        </span>
+      ) : (
+        "Download my data"
+      )}
     </Button>
   );
 }

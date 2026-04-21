@@ -27,19 +27,22 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "FluentUp English — Learn English the fun way",
+    default: "FluentUp — Learn English free forever",
     template: "%s · FluentUp English",
   },
   description:
-    "Gamified English learning platform. Practice vocabulary, grammar, listening and speaking with your AI tutor. Earn XP, level up, keep your streak alive.",
+    "Gamified English learning platform. Practice vocabulary, grammar, listening and speaking. Earn XP, level up, keep your streak alive — free forever.",
   keywords: [
+    "learn english",
+    "english vocabulary",
+    "english grammar",
+    "free english",
+    "english games",
+    "cefr english",
     "English learning",
     "language app",
-    "vocabulary",
-    "grammar",
     "AI tutor",
     "gamified learning",
-    "English practice",
   ],
   authors: [{ name: "FluentUp" }],
   creator: "FluentUp",
@@ -62,10 +65,12 @@ export const metadata: Metadata = {
     url: "https://fluentupenglish.com",
     siteName: "FluentUp English",
     locale: "en_US",
+    alternateLocale: ["tr_TR"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
+    creator: "@fluentupenglish",
     title: "FluentUp English",
     description:
       "Gamified English learning platform. Earn XP, level up, keep your streak alive.",

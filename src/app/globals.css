@@ -57,12 +57,20 @@
   --shadow-solid-dark: 0 3px 0 0 #334155;
   --shadow-soft: 0 8px 24px -8px rgba(15, 23, 42, 0.08);
   --shadow-lift: 0 12px 28px -12px rgba(15, 23, 42, 0.12);
+  --shadow-soft-xl: 0 20px 40px -15px rgba(15, 23, 42, 0.15),
+    0 8px 16px -8px rgba(15, 23, 42, 0.1);
 }
 
 @layer base {
   * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 8px;
   }
 
   html,
@@ -106,5 +114,68 @@
       transform: translateY(100vh) rotate(720deg);
       opacity: 0;
     }
+  }
+
+  @keyframes mascot-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes mascot-celebrate {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    30% {
+      transform: translateY(-8px) scale(1.05);
+    }
+    60% {
+      transform: translateY(0) scale(0.98);
+    }
+  }
+
+  @keyframes mascot-think {
+    0%,
+    100% {
+      transform: rotate(-2deg);
+    }
+    50% {
+      transform: rotate(2deg);
+    }
+  }
+
+  .animate-mascot-breathe {
+    animation: mascot-breathe 3s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  .animate-mascot-celebrate {
+    animation: mascot-celebrate 0.8s ease-out;
+    transform-origin: center;
+  }
+
+  .animate-mascot-think {
+    animation: mascot-think 2s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-page-fade-in {
+    animation: page-fade-in 0.3s ease-out;
   }
 }

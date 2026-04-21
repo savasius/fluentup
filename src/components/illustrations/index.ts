@@ -12,4 +12,5 @@ export { BookPencilScene } from "./scenes/BookPencilScene";
 export { ClockScene } from "./scenes/ClockScene";
 
 export { Mascot } from "./Mascot";
+export { EmptyStateIllustration } from "./EmptyState";
 export { QuestScene } from "./QuestScene";

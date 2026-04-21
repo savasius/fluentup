@@ -17,6 +17,16 @@ interface MascotProps {
  * Mood'lar farklı bağlamlar için: default happy, thinking (404, empty state),
  * celebrating (level up, achievement), sad (error, streak kırıldı).
  */
+const moodAnimation: Record<
+  MascotMood,
+  "animate-mascot-breathe" | "animate-mascot-think" | "animate-mascot-celebrate" | ""
+> = {
+  happy: "animate-mascot-breathe",
+  thinking: "animate-mascot-think",
+  celebrating: "animate-mascot-celebrate",
+  sad: "",
+};
+
 export function Mascot({
   size = 180,
   mood = "happy",
@@ -27,7 +37,7 @@ export function Mascot({
       viewBox="0 0 200 200"
       width={size}
       height={size}
-      className={cn(className)}
+      className={cn(moodAnimation[mood], className)}
       aria-hidden
     >
       {/* Floating sparkles */}

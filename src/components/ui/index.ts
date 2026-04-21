@@ -6,3 +6,5 @@ export { ComingSoon } from "./ComingSoon";
 export { ToastContainer } from "./Toast";
 export { Skeleton, SkeletonText, SkeletonCard } from "./Skeleton";
 export { Confetti } from "./Confetti";
+export { ScrollReveal } from "./ScrollReveal";
+export { Spinner } from "./Spinner";

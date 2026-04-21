@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, Badge, Button } from "@/components/ui";
-import { Search, BookMarked, X } from "lucide-react";
+import { EmptyStateIllustration } from "@/components/illustrations";
+import { Search, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { CefrLevel, WordRarity, PartOfSpeech } from "@/lib/supabase/database.types";
 
@@ -193,7 +194,7 @@ export function VocabularyBrowser({ words }: { words: WordItem[] }) {
 
       {filtered.length === 0 ? (
         <Card className="p-10 text-center">
-          <BookMarked className="w-12 h-12 text-ink-muted mx-auto mb-3" strokeWidth={2} />
+          <EmptyStateIllustration variant="no-results" size={120} className="mx-auto mb-3" />
           <div className="font-display text-lg font-extrabold text-ink">No words found</div>
           <p className="mt-1 text-sm text-ink-soft">Try adjusting your filters or search query</p>
           {hasFilters && (

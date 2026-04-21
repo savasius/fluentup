@@ -7,6 +7,15 @@ import type { Database } from "@/lib/supabase/database.types";
  * Auth gerektiren sayfalar için zorunlu.
  */
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  if (path.startsWith("/admin")) {
+    const token = request.nextUrl.searchParams.get("token");
+    const expected = process.env.ADMIN_SECRET_TOKEN;
+    if (!expected || token !== expected) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(
@@ -35,8 +44,6 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const protectedPaths = ["/profile", "/onboarding"];
-  const path = request.nextUrl.pathname;
-
   if (!user && protectedPaths.some((p) => path.startsWith(p))) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
