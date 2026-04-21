@@ -12,6 +12,8 @@ interface GameCardProps {
   estimatedMinutes: number;
   difficulty: "easy" | "medium" | "hard";
   available: boolean;
+  /** Shown under description when set (e.g. live word count from the library). */
+  statLine?: string;
 }
 
 const accentBg: Record<GameCardProps["accentColor"], string> = {
@@ -50,6 +52,7 @@ export function GameCard({
   estimatedMinutes,
   difficulty,
   available,
+  statLine,
 }: GameCardProps) {
   const content = (
     <Card
@@ -87,6 +90,9 @@ export function GameCard({
       <p className="mt-2 text-sm text-ink-soft leading-relaxed flex-1">
         {description}
       </p>
+      {statLine ? (
+        <p className="mt-2 text-xs font-bold text-ink-muted">{statLine}</p>
+      ) : null}
 
       <div className="mt-4 flex items-center justify-between">
         {available ? (

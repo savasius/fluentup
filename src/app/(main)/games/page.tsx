@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Card } from "@/components/ui";
 import { GameCard } from "@/components/domain";
+import { createServerClient } from "@/lib/supabase";
 import { Shuffle, Link2, Gamepad2, Trophy, Brain, Heart, Volume2 } from "lucide-react";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Games — Learn English while having fun",
@@ -15,10 +18,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function GamesPage() {
+export default async function GamesPage() {
+  const supabase = await createServerClient();
+  const { count: wordCount } = await supabase
+    .from("words")
+    .select("*", { count: "exact", head: true })
+    .eq("published", true);
+
+  const statLine =
+    wordCount !== null ? `Pulls from ${wordCount}+ published words` : undefined;
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Header */}
       <div>
         <h1 className="font-display text-3xl lg:text-4xl font-extrabold text-ink flex items-center gap-3">
           <Gamepad2 className="w-7 h-7 text-primary" strokeWidth={2.3} />
@@ -30,7 +41,6 @@ export default function GamesPage() {
         </p>
       </div>
 
-      {/* Game grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <GameCard
           href="/games/word-scramble"
@@ -41,6 +51,7 @@ export default function GamesPage() {
           estimatedMinutes={3}
           difficulty="medium"
           available={true}
+          statLine={statLine}
         />
 
         <GameCard
@@ -52,6 +63,7 @@ export default function GamesPage() {
           estimatedMinutes={2}
           difficulty="easy"
           available={true}
+          statLine={statLine}
         />
 
         <GameCard
@@ -63,6 +75,7 @@ export default function GamesPage() {
           estimatedMinutes={2}
           difficulty="medium"
           available={true}
+          statLine={statLine}
         />
 
         <GameCard
@@ -74,6 +87,7 @@ export default function GamesPage() {
           estimatedMinutes={3}
           difficulty="medium"
           available={true}
+          statLine={statLine}
         />
 
         <GameCard
@@ -85,6 +99,7 @@ export default function GamesPage() {
           estimatedMinutes={3}
           difficulty="medium"
           available={true}
+          statLine={statLine}
         />
 
         <GameCard
@@ -96,10 +111,10 @@ export default function GamesPage() {
           estimatedMinutes={2}
           difficulty="medium"
           available={true}
+          statLine={statLine}
         />
       </div>
 
-      {/* Info card */}
       <Card className="p-5 lg:p-6 bg-gradient-to-r from-primary-tint to-primary-soft border-primary-tint">
         <h2 className="font-display text-lg font-extrabold text-ink">
           More games coming soon

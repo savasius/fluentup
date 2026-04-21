@@ -11,6 +11,7 @@ import type {
 import {
   GuestDashboard,
   UserDashboard,
+  type FeaturedGrammarTopic,
   type GuestPreviewWord,
 } from "@/components/domain";
 
@@ -25,19 +26,80 @@ export const metadata: Metadata = {
 // Word-of-the-day cache — revalidate every 10 minutes so fresh rows propagate.
 export const revalidate = 600;
 
+function mapToPreviewWord(
+  w: Pick<
+    WordRow,
+    "slug" | "word" | "cefr_level" | "rarity" | "part_of_speech" | "meanings"
+  >,
+): GuestPreviewWord {
+  const meanings = w.meanings as WordMeaning[] | null;
+  return {
+    slug: w.slug,
+    word: w.word,
+    cefr_level: w.cefr_level as CefrLevel,
+    rarity: w.rarity as WordRarity,
+    part_of_speech: w.part_of_speech,
+    firstMeaning: meanings?.[0]?.definition ?? "",
+  };
+}
+
 export default async function DashboardPage() {
   const { user, profile } = await getCurrentUserWithProfile();
   const userLevel: CefrLevel | undefined = profile?.cefr_level;
 
   const wordOfDay = await getWordOfTheDay(userLevel);
 
-  if (!user) {
-    const supabase = await createServerClient();
-    const { count: wordCount } = await supabase
+  const supabase = await createServerClient();
+
+  const [
+    { count: wordCount },
+    { count: grammarCount },
+    { data: recentWordsRaw },
+    { data: grammarFeaturedRaw },
+  ] = await Promise.all([
+    supabase
       .from("words")
       .select("*", { count: "exact", head: true })
-      .eq("published", true);
+      .eq("published", true),
+    supabase
+      .from("grammar_topics")
+      .select("*", { count: "exact", head: true })
+      .eq("published", true),
+    supabase
+      .from("words")
+      .select("slug, word, cefr_level, rarity, part_of_speech, meanings")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(8),
+    supabase
+      .from("grammar_topics")
+      .select("slug, title, cefr_level, short_description")
+      .eq("published", true)
+      .order("cefr_level", { ascending: true })
+      .order("title", { ascending: true })
+      .limit(4),
+  ]);
 
+  const recentRows =
+    (recentWordsRaw ?? []) as Pick<
+      WordRow,
+      "slug" | "word" | "cefr_level" | "rarity" | "part_of_speech" | "meanings"
+    >[];
+  const recentWords = recentRows.map(mapToPreviewWord);
+
+  const grammarRows =
+    (grammarFeaturedRaw ?? []) as Pick<
+      Database["public"]["Tables"]["grammar_topics"]["Row"],
+      "slug" | "title" | "cefr_level" | "short_description"
+    >[];
+  const featuredGrammar: FeaturedGrammarTopic[] = grammarRows.map((g) => ({
+    slug: g.slug,
+    title: g.title,
+    cefr_level: g.cefr_level as CefrLevel,
+    short_description: g.short_description,
+  }));
+
+  if (!user) {
     const { data: previewWordsRaw } = await supabase
       .from("words")
       .select("slug, word, cefr_level, rarity, part_of_speech, meanings")
@@ -50,23 +112,16 @@ export default async function DashboardPage() {
       "slug" | "word" | "cefr_level" | "rarity" | "part_of_speech" | "meanings"
     >[];
 
-    const previewWords: GuestPreviewWord[] = previewRows.map((w) => {
-      const meanings = w.meanings as WordMeaning[] | null;
-      return {
-        slug: w.slug,
-        word: w.word,
-        cefr_level: w.cefr_level as CefrLevel,
-        rarity: w.rarity as WordRarity,
-        part_of_speech: w.part_of_speech,
-        firstMeaning: meanings?.[0]?.definition ?? "",
-      };
-    });
+    const previewWords: GuestPreviewWord[] = previewRows.map(mapToPreviewWord);
 
     return (
       <GuestDashboard
         wordOfDay={wordOfDay}
         totalWords={wordCount ?? 0}
+        totalGrammar={grammarCount ?? 0}
         previewWords={previewWords}
+        recentWords={recentWords}
+        featuredGrammar={featuredGrammar}
       />
     );
   }
@@ -94,6 +149,10 @@ export default async function DashboardPage() {
         onboardingCompleted: profile?.onboarding_completed ?? false,
       }}
       wordOfDay={wordOfDay}
+      totalWords={wordCount ?? 0}
+      totalGrammar={grammarCount ?? 0}
+      recentWords={recentWords}
+      featuredGrammar={featuredGrammar}
     />
   );
 }

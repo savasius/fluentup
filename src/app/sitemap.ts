@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { createServerClient } from "@/lib/supabase";
+import { COLLECTIONS } from "@/lib/collections/data";
 
 type WordSitemapRow = { slug: string; updated_at: string };
 type GrammarSitemapRow = { slug: string; updated_at: string };
@@ -30,6 +31,19 @@ const STATIC_ROUTES = [
   },
   { path: "/vocabulary", changeFreq: "weekly" as const, priority: 0.9 },
   { path: "/grammar", changeFreq: "weekly" as const, priority: 0.9 },
+  { path: "/collections", changeFreq: "weekly" as const, priority: 0.85 },
+  { path: "/word-of-the-day", changeFreq: "daily" as const, priority: 0.85 },
+  {
+    path: "/games/memory-match",
+    changeFreq: "monthly" as const,
+    priority: 0.7,
+  },
+  { path: "/games/hangman", changeFreq: "monthly" as const, priority: 0.7 },
+  {
+    path: "/games/listen-type",
+    changeFreq: "monthly" as const,
+    priority: 0.7,
+  },
   { path: "/lesson", changeFreq: "weekly" as const, priority: 0.8 },
   { path: "/tutor", changeFreq: "weekly" as const, priority: 0.7 },
   { path: "/profile", changeFreq: "monthly" as const, priority: 0.5 },
@@ -41,6 +55,13 @@ const STATIC_ROUTES = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+
+  const collectionEntries: MetadataRoute.Sitemap = COLLECTIONS.map((c) => ({
+    url: `${BASE_URL}/collections/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({
     url: `${BASE_URL}${r.path}`,
@@ -86,5 +107,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap: failed to fetch dynamic entries", err);
   }
 
-  return [...staticEntries, ...wordEntries, ...grammarEntries];
+  return [...staticEntries, ...collectionEntries, ...wordEntries, ...grammarEntries];
 }

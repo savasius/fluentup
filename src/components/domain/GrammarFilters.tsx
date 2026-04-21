@@ -10,10 +10,16 @@ const CATEGORIES = [
   { value: "all", label: "All topics" },
   { value: "tenses", label: "Tenses" },
   { value: "articles", label: "Articles" },
+  { value: "prepositions", label: "Prepositions" },
   { value: "modals", label: "Modals" },
-  { value: "word-order", label: "Word order" },
   { value: "conditionals", label: "Conditionals" },
-  { value: "passive", label: "Passive" },
+  { value: "passive", label: "Passive voice" },
+  { value: "reported-speech", label: "Reported speech" },
+  { value: "clauses", label: "Clauses" },
+  { value: "word-order", label: "Word order" },
+  { value: "pronouns", label: "Pronouns" },
+  { value: "questions", label: "Questions" },
+  { value: "punctuation", label: "Punctuation" },
 ] as const;
 
 export function GrammarFilters() {

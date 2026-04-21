@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card, ProgressBar } from "@/components/ui";
+import { Card, ProgressBar, Button, Badge } from "@/components/ui";
 import { WordOfTheDayCard } from "./WordOfTheDayCard";
 import {
   Flame,
@@ -9,11 +9,13 @@ import {
   BookMarked,
   BookOpen,
   Gamepad2,
+  Sparkles,
 } from "lucide-react";
 import type { WordOfTheDay } from "@/lib/word-of-the-day";
 import type { CefrLevel } from "@/lib/supabase/database.types";
 import { levelFromXp } from "@/lib/economy/constants";
 import { getEarnedAchievements } from "@/lib/economy/achievements";
+import type { FeaturedGrammarTopic, GuestPreviewWord } from "./GuestDashboard";
 
 interface Props {
   user: { fullName: string };
@@ -28,9 +30,21 @@ interface Props {
     onboardingCompleted: boolean;
   };
   wordOfDay: WordOfTheDay | null;
+  totalWords: number;
+  totalGrammar: number;
+  recentWords: GuestPreviewWord[];
+  featuredGrammar: FeaturedGrammarTopic[];
 }
 
-export function UserDashboard({ user, profile, wordOfDay }: Props) {
+export function UserDashboard({
+  user,
+  profile,
+  wordOfDay,
+  totalWords,
+  totalGrammar,
+  recentWords,
+  featuredGrammar,
+}: Props) {
   const { level, progress, nextLevelXp } = levelFromXp(profile.totalXp);
   const dailyProgress = Math.min(
     100,
@@ -106,6 +120,29 @@ export function UserDashboard({ user, profile, wordOfDay }: Props) {
         </div>
       </Card>
 
+      <Card className="p-5 bg-gradient-to-r from-primary-tint/30 to-reward-tint/30">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div>
+            <div className="font-display text-3xl font-extrabold text-primary">{totalWords}+</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">Words</div>
+          </div>
+          <div>
+            <div className="font-display text-3xl font-extrabold text-success-dark">{totalGrammar}</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">
+              Grammar topics
+            </div>
+          </div>
+          <div>
+            <div className="font-display text-3xl font-extrabold text-reward-dark">6</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">Games</div>
+          </div>
+          <div>
+            <div className="font-display text-3xl font-extrabold text-rare">CEFR</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">A1 → C2</div>
+          </div>
+        </div>
+      </Card>
+
       {/* DAILY GOAL */}
       <Card className="p-5 lg:p-6">
         <div className="flex items-center justify-between mb-3">
@@ -133,6 +170,46 @@ export function UserDashboard({ user, profile, wordOfDay }: Props) {
 
       {/* WORD OF THE DAY */}
       {wordOfDay && <WordOfTheDayCard word={wordOfDay} />}
+
+      {recentWords.length > 0 && (
+        <section>
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <h2 className="font-display text-xl font-extrabold text-ink flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" strokeWidth={2.3} />
+                Fresh additions
+              </h2>
+              <p className="mt-1 text-ink-soft text-sm">New words just added to the library</p>
+            </div>
+            <Link
+              href="/vocabulary"
+              className="text-sm font-bold text-primary hover:text-primary-dark"
+            >
+              All words →
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {recentWords.map((w) => (
+              <Link key={w.slug} href={`/vocabulary/${w.slug}`}>
+                <Card interactive className="p-4 h-full">
+                  <div className="flex gap-1.5 mb-2">
+                    <Badge color="primary" size="sm">
+                      {w.cefr_level}
+                    </Badge>
+                    {w.rarity !== "common" && (
+                      <Badge color={w.rarity === "epic" ? "rare" : "primary"} size="sm">
+                        {w.rarity}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="font-display text-base font-extrabold text-ink">{w.word}</div>
+                  <p className="mt-1 text-xs text-ink-soft line-clamp-2">{w.firstMeaning}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* LEVEL PROGRESS */}
       <Card className="p-5 lg:p-6">
@@ -210,44 +287,73 @@ export function UserDashboard({ user, profile, wordOfDay }: Props) {
         </div>
       </section>
 
-      {/* ACHIEVEMENTS */}
-      {earnedAchievements.length > 0 && (
+      {featuredGrammar.length > 0 && (
         <section>
-          <div className="flex items-end justify-between mb-3">
-            <h2 className="font-display text-xl font-extrabold text-ink flex items-center gap-2">
-              <Trophy
-                className="w-5 h-5 text-reward-dark"
-                strokeWidth={2.3}
-              />
-              Recent achievements
-            </h2>
+          <h2 className="font-display text-xl font-extrabold text-ink mb-3 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-success-dark" strokeWidth={2.3} />
+            Master grammar
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {featuredGrammar.map((g) => (
+              <Link key={g.slug} href={`/grammar/${g.slug}`}>
+                <Card interactive className="p-4 h-full">
+                  <Badge color="success" size="sm">
+                    {g.cefr_level}
+                  </Badge>
+                  <h3 className="mt-2 font-display text-base font-extrabold text-ink">{g.title}</h3>
+                  <p className="mt-1 text-xs text-ink-soft line-clamp-2">{g.short_description}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ACHIEVEMENTS */}
+      <section>
+        <div className="flex items-end justify-between mb-3">
+          <h2 className="font-display text-xl font-extrabold text-ink flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-reward-dark" strokeWidth={2.3} />
+            Recent achievements
+          </h2>
+          {earnedAchievements.length > 0 && (
             <Link
               href="/profile"
               className="text-sm font-bold text-primary hover:text-primary-dark"
             >
               All →
             </Link>
-          </div>
+          )}
+        </div>
+        {earnedAchievements.length === 0 ? (
+          <Card className="p-8 text-center">
+            <Trophy className="w-12 h-12 text-ink-muted mx-auto mb-3" strokeWidth={2} />
+            <div className="font-display text-lg font-extrabold text-ink">No achievements yet</div>
+            <p className="mt-1 text-sm text-ink-soft">
+              Play a game or learn a word to earn your first badge!
+            </p>
+            <Link href="/games">
+              <Button variant="primary" shape="pill" size="sm" className="mt-4">
+                Play a game
+              </Button>
+            </Link>
+          </Card>
+        ) : (
           <div className="grid sm:grid-cols-3 gap-3">
             {earnedAchievements.map((a) => (
               <Card key={a.id} className="p-4 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-reward-soft flex items-center justify-center flex-shrink-0">
-                  <Trophy
-                    className="w-5 h-5 text-reward-dark"
-                    strokeWidth={2.3}
-                  />
+                  <Trophy className="w-5 h-5 text-reward-dark" strokeWidth={2.3} />
                 </div>
                 <div>
                   <div className="font-bold text-ink text-sm">{a.title}</div>
-                  <div className="text-xs text-ink-muted">
-                    {a.description}
-                  </div>
+                  <div className="text-xs text-ink-muted">{a.description}</div>
                 </div>
               </Card>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
     </div>
   );
 }

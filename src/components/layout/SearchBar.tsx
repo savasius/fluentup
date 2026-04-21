@@ -112,8 +112,10 @@ export function SearchBar() {
           )}
 
           {!loading && !hasResults && (
-            <div className="p-4 text-sm text-ink-muted text-center">
-              No results for &ldquo;{query}&rdquo;
+            <div className="p-6 text-center">
+              <Search className="w-8 h-8 text-ink-muted mx-auto mb-2" strokeWidth={2} />
+              <p className="text-sm text-ink-muted">No matches for &ldquo;{query}&rdquo;</p>
+              <p className="text-xs text-ink-muted mt-1">Try a different term</p>
             </div>
           )}
 

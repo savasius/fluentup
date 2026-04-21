@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import { createServerClient } from "@/lib/supabase";
 import { Card, Badge } from "@/components/ui";
-import { GrammarCard, GrammarFilters } from "@/components/domain";
+import { GrammarCard, GrammarFilters, GRAMMAR_CATEGORY_LABEL } from "@/components/domain";
 import { BookOpen, Search } from "lucide-react";
-import type {
-  CefrLevel,
-  GrammarCategory,
-} from "@/lib/supabase/database.types";
+import type { CefrLevel, GrammarCategory } from "@/lib/supabase/database.types";
 
 interface GrammarRow {
   slug: string;
@@ -16,16 +13,41 @@ interface GrammarRow {
   category: GrammarCategory;
 }
 
-export const revalidate = 3600;
+const CATEGORY_ORDER: GrammarCategory[] = [
+  "articles",
+  "tenses",
+  "prepositions",
+  "modals",
+  "conditionals",
+  "passive",
+  "reported-speech",
+  "clauses",
+  "word-order",
+  "pronouns",
+  "questions",
+  "punctuation",
+];
+
+function sortCategoryKeys(keys: string[]): string[] {
+  return [...keys].sort((a, b) => {
+    const ia = CATEGORY_ORDER.indexOf(a as GrammarCategory);
+    const ib = CATEGORY_ORDER.indexOf(b as GrammarCategory);
+    const ra = ia === -1 ? 999 : ia;
+    const rb = ib === -1 ? 999 : ib;
+    if (ra !== rb) return ra - rb;
+    return a.localeCompare(b);
+  });
+}
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Grammar — Master English grammar by level",
+  title: "Grammar — 20+ topics from A1 to C2",
   description:
-    "Browse English grammar topics by CEFR level (A1-C2) and category. Each topic includes clear explanations, real examples, common mistakes, and interactive quizzes.",
+    "Master English grammar with clear rules, examples, and interactive quizzes.",
   openGraph: {
     title: "Grammar — FluentUp English",
-    description:
-      "Master English grammar from A1 to C2 with clear explanations and interactive quizzes.",
+    description: "Grammar topics from A1 to C2 with quizzes and examples.",
     type: "website",
   },
 };
@@ -60,18 +82,27 @@ export default async function GrammarPage({ searchParams }: PageProps) {
     .select("*", { count: "exact", head: true })
     .eq("published", true);
 
+  const byCategory: Record<string, GrammarRow[]> = {};
+  for (const t of topics) {
+    const cat = t.category;
+    if (!byCategory[cat]) byCategory[cat] = [];
+    byCategory[cat].push(t);
+  }
+
+  const sortedCategories = sortCategoryKeys(Object.keys(byCategory));
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl lg:text-4xl font-extrabold text-ink flex items-center gap-3">
-            <BookOpen className="w-7 h-7 text-primary" strokeWidth={2.3} />
+            <BookOpen className="w-7 h-7 text-success-dark" strokeWidth={2.3} />
             Grammar
           </h1>
           <p className="mt-2 text-ink-soft text-[15px] max-w-2xl">
-            Master English grammar step by step. Clear explanations, real
-            examples, common mistakes you should avoid, and a quick quiz after
-            every topic.
+            {(totalCount ?? topics.length) === topics.length
+              ? `${topics.length} topics from beginner to advanced. Each topic includes rules, examples, and quizzes.`
+              : `${topics.length} topics match your filters (${totalCount ?? topics.length} total). Each topic includes rules, examples, and quizzes.`}
           </p>
         </div>
 
@@ -116,20 +147,33 @@ export default async function GrammarPage({ searchParams }: PageProps) {
         </Card>
       )}
 
-      {!error && topics.length > 0 && (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {topics.map((t) => (
-            <GrammarCard
-              key={t.slug}
-              slug={t.slug}
-              title={t.title}
-              shortDescription={t.short_description}
-              cefrLevel={t.cefr_level}
-              category={t.category}
-            />
-          ))}
-        </div>
-      )}
+      {!error &&
+        topics.length > 0 &&
+        sortedCategories.map((cat) => {
+          const items = byCategory[cat];
+          if (!items?.length) return null;
+          const label =
+            GRAMMAR_CATEGORY_LABEL[cat as GrammarCategory] ?? cat;
+          return (
+            <section key={cat}>
+              <h2 className="font-display text-xl font-extrabold text-ink mb-3">
+                {label}
+              </h2>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map((t) => (
+                  <GrammarCard
+                    key={t.slug}
+                    slug={t.slug}
+                    title={t.title}
+                    shortDescription={t.short_description}
+                    cefrLevel={t.cefr_level}
+                    category={t.category}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
     </div>
   );
 }

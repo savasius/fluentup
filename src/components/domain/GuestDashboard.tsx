@@ -5,6 +5,7 @@ import { Mascot } from "@/components/illustrations";
 import {
   Gamepad2,
   BookMarked,
+  BookOpen,
   Shuffle,
   Link2,
   Trophy,
@@ -24,10 +25,20 @@ export interface GuestPreviewWord {
   firstMeaning: string;
 }
 
+export interface FeaturedGrammarTopic {
+  slug: string;
+  title: string;
+  cefr_level: CefrLevel;
+  short_description: string;
+}
+
 interface Props {
   wordOfDay: WordOfTheDay | null;
   totalWords: number;
+  totalGrammar: number;
   previewWords: GuestPreviewWord[];
+  recentWords: GuestPreviewWord[];
+  featuredGrammar: FeaturedGrammarTopic[];
 }
 
 const CEFR_LEVELS: {
@@ -46,7 +57,10 @@ const CEFR_LEVELS: {
 export function GuestDashboard({
   wordOfDay,
   totalWords,
+  totalGrammar,
   previewWords,
+  recentWords,
+  featuredGrammar,
 }: Props) {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -110,10 +124,74 @@ export function GuestDashboard({
         </Card>
       </section>
 
+      <Card className="p-5 bg-gradient-to-r from-primary-tint/30 to-reward-tint/30">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div>
+            <div className="font-display text-3xl font-extrabold text-primary">{totalWords}+</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">Words</div>
+          </div>
+          <div>
+            <div className="font-display text-3xl font-extrabold text-success-dark">{totalGrammar}</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">
+              Grammar topics
+            </div>
+          </div>
+          <div>
+            <div className="font-display text-3xl font-extrabold text-reward-dark">6</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">Games</div>
+          </div>
+          <div>
+            <div className="font-display text-3xl font-extrabold text-rare">CEFR</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">A1 → C2</div>
+          </div>
+        </div>
+      </Card>
+
       {/* WORD OF THE DAY */}
       {wordOfDay && (
         <section>
           <WordOfTheDayCard word={wordOfDay} />
+        </section>
+      )}
+
+      {recentWords.length > 0 && (
+        <section>
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <h2 className="font-display text-2xl lg:text-3xl font-extrabold text-ink flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" strokeWidth={2.3} />
+                Fresh additions
+              </h2>
+              <p className="mt-1 text-ink-soft text-sm">New words just added to the library</p>
+            </div>
+            <Link
+              href="/vocabulary"
+              className="text-sm font-bold text-primary hover:text-primary-dark"
+            >
+              All words →
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {recentWords.map((w) => (
+              <Link key={w.slug} href={`/vocabulary/${w.slug}`}>
+                <Card interactive className="p-4 h-full">
+                  <div className="flex gap-1.5 mb-2">
+                    <Badge color="primary" size="sm">
+                      {w.cefr_level}
+                    </Badge>
+                    {w.rarity !== "common" && (
+                      <Badge color={w.rarity === "epic" ? "rare" : "primary"} size="sm">
+                        {w.rarity}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="font-display text-base font-extrabold text-ink">{w.word}</div>
+                  <p className="mt-1 text-xs text-ink-soft line-clamp-2">{w.firstMeaning}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 
@@ -230,6 +308,28 @@ export function GuestDashboard({
           ))}
         </div>
       </section>
+
+      {featuredGrammar.length > 0 && (
+        <section>
+          <h2 className="font-display text-2xl lg:text-3xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <BookOpen className="w-6 h-6 text-success-dark" strokeWidth={2.3} />
+            Master grammar
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {featuredGrammar.map((g) => (
+              <Link key={g.slug} href={`/grammar/${g.slug}`}>
+                <Card interactive className="p-4 h-full">
+                  <Badge color="success" size="sm">
+                    {g.cefr_level}
+                  </Badge>
+                  <h3 className="mt-2 font-display text-base font-extrabold text-ink">{g.title}</h3>
+                  <p className="mt-1 text-xs text-ink-soft line-clamp-2">{g.short_description}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* PREVIEW WORDS */}
       {previewWords.length > 0 && (

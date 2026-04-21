@@ -3,7 +3,7 @@ export { QuestBanner } from "./QuestBanner";
 export { WordCard, extractFirstMeaning } from "./WordCard";
 export { VocabularyFilters } from "./VocabularyFilters";
 export { GrammarQuiz } from "./GrammarQuiz";
-export { GrammarCard } from "./GrammarCard";
+export { GrammarCard, GRAMMAR_CATEGORY_LABEL } from "./GrammarCard";
 export { GrammarFilters } from "./GrammarFilters";
 export { GameCard } from "./GameCard";
 export { WordScrambleGame } from "./WordScrambleGame";
@@ -12,7 +12,12 @@ export { SentenceBuilderGame } from "./SentenceBuilderGame";
 export { PlacementQuiz } from "./PlacementQuiz";
 export { ProfileForm } from "./ProfileForm";
 export { WordOfTheDayCard } from "./WordOfTheDayCard";
-export { GuestDashboard, type GuestPreviewWord } from "./GuestDashboard";
+export {
+  GuestDashboard,
+  type GuestPreviewWord,
+  type FeaturedGrammarTopic,
+} from "./GuestDashboard";
+export { VocabularyBrowser } from "./VocabularyBrowser";
 export { UserDashboard } from "./UserDashboard";
 export { PronunciationButton } from "./PronunciationButton";
 export { MemoryMatchGame } from "./MemoryMatchGame";

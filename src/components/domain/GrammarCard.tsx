@@ -20,7 +20,7 @@ const levelColor: Record<CefrLevel, "primary" | "success" | "rare"> = {
   C2: "rare",
 };
 
-const categoryLabel: Record<GrammarCategory, string> = {
+export const GRAMMAR_CATEGORY_LABEL: Record<GrammarCategory, string> = {
   tenses: "Tenses",
   articles: "Articles",
   prepositions: "Prepositions",
@@ -58,7 +58,7 @@ export function GrammarCard({
 
         <div className="mt-1">
           <div className="text-xs font-bold uppercase tracking-widest text-ink-muted">
-            {categoryLabel[category]}
+            {GRAMMAR_CATEGORY_LABEL[category]}
           </div>
           <h3 className="mt-1 font-display text-lg font-extrabold text-ink leading-tight">
             {title}
