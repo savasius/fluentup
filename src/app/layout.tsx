@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ToastProvider } from "@/lib/toast/context";
-import { ThemeProvider } from "@/lib/theme/context";
 import { ToastContainer } from "@/components/ui";
 import "./globals.css";
 
@@ -21,10 +20,7 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
-  ],
+  themeColor: "#f8fafc",
   width: "device-width",
   initialScale: 1,
 };
@@ -95,12 +91,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jakarta.variable} ${bricolage.variable}`}>
       <body>
-        <ThemeProvider>
-          <ToastProvider>
-            {children}
-            <ToastContainer />
-          </ToastProvider>
-        </ThemeProvider>
+        <ToastProvider>
+          {children}
+          <ToastContainer />
+        </ToastProvider>
         <GoogleAnalytics />
       </body>
     </html>

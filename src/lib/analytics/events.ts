@@ -36,7 +36,6 @@ export type AnalyticsEvent =
       params: { query_length: number; results_count: number };
     }
   | { name: "command_palette_opened"; params: Record<string, never> }
-  | { name: "theme_changed"; params: { theme: "light" | "dark" | "system" } }
   | {
       name: "xp_earned";
       params: { amount: number; source: string; level_up: boolean };

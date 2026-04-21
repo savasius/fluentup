@@ -3,13 +3,12 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/supabase";
 import { Card, Button } from "@/components/ui";
 import { Settings, User, Download, Trash2, LogIn } from "lucide-react";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { DeleteAccountForm, DataExportButton } from "@/components/domain";
 
 export const metadata: Metadata = {
   title: "Settings — FluentUp English",
   description:
-    "Manage your account, appearance, export your data, and delete your account.",
+    "Manage your account, export your data, and delete your account.",
 };
 
 export default async function SettingsPage() {
@@ -45,7 +44,7 @@ export default async function SettingsPage() {
           Settings
         </h1>
         <p className="mt-2 text-ink-soft text-[15px]">
-          Manage your preferences and account.
+          Manage your account and data.
         </p>
       </div>
 
@@ -68,16 +67,6 @@ export default async function SettingsPage() {
             </dd>
           </div>
         </dl>
-      </Card>
-
-      <Card className="p-5 lg:p-6">
-        <h2 className="font-display text-lg font-extrabold text-ink mb-3">
-          Appearance
-        </h2>
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-ink-soft">Theme</p>
-          <ThemeToggle />
-        </div>
       </Card>
 
       <Card className="p-5 lg:p-6">

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Menu, Flame, Zap, Bell } from "lucide-react";
 import { Button } from "@/components/ui";
 import { SearchBar } from "./SearchBar";
-import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
 import type { AppUser } from "./AppShell";
 
@@ -64,12 +63,10 @@ export function Topbar({ onMenuClick, user }: TopbarProps) {
                 <span className="absolute top-2 right-2.5 w-2 h-2 bg-action rounded-full" />
               </button>
 
-              <ThemeToggle />
               <UserMenu user={user} />
             </>
           ) : (
             <>
-              <ThemeToggle />
               <Link
                 href="/login"
                 className="text-sm font-bold text-ink-soft hover:text-ink transition"
