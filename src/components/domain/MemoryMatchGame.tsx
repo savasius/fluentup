@@ -10,7 +10,7 @@ import {
   ArrowLeft,
   Check,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { useToast } from "@/lib/toast/context";
 import {
@@ -23,7 +23,7 @@ import {
 import { awardXp } from "@/lib/economy/actions";
 import { XP_REWARDS, levelFromXp } from "@/lib/economy/constants";
 import { trackEvent } from "@/lib/analytics/events";
-import type { MemoryWord } from "@/app/(main)/games/memory-match/page";
+import type { MemoryWord } from "@/app/[locale]/(main)/games/memory-match/page";
 import type { CefrLevel } from "@/lib/supabase/database.types";
 
 interface Props {

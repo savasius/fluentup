@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, Badge, Button } from "@/components/ui";
 import { PronunciationButton } from "./PronunciationButton";
 import { Sparkles, ArrowRight } from "lucide-react";

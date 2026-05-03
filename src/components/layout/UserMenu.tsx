@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { signOut } from "@/lib/auth/actions";
+import { useTranslations } from "next-intl";
 import { User, Settings, LogOut } from "lucide-react";
 import type { AppUser } from "./AppShell";
 
@@ -22,6 +23,8 @@ function getInitials(name: string): string {
 export function UserMenu({ user }: { user: AppUser }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const tNav = useTranslations("nav");
+  const tProfile = useTranslations("profile");
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -38,7 +41,7 @@ export function UserMenu({ user }: { user: AppUser }) {
       <button
         onClick={() => setOpen(!open)}
         className="w-10 h-10 rounded-xl bg-primary text-white font-extrabold text-sm flex items-center justify-center shadow-solid-primary hover:-translate-y-0.5 transition overflow-hidden"
-        aria-label="User menu"
+        aria-label={tProfile("title")}
       >
         {user.avatarUrl ? (
           <Image
@@ -68,15 +71,15 @@ export function UserMenu({ user }: { user: AppUser }) {
               onClick={() => setOpen(false)}
             >
               <User className="w-4 h-4" strokeWidth={2.3} />
-              Profile
+              {tNav("profile")}
             </Link>
             <Link
-              href="/profile"
+              href="/settings"
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-ink hover:bg-line-soft transition"
               onClick={() => setOpen(false)}
             >
               <Settings className="w-4 h-4" strokeWidth={2.3} />
-              Settings
+              {tNav("settings")}
             </Link>
             <form action={signOut}>
               <button
@@ -84,7 +87,7 @@ export function UserMenu({ user }: { user: AppUser }) {
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-action-dark hover:bg-action-soft transition"
               >
                 <LogOut className="w-4 h-4" strokeWidth={2.3} />
-                Sign out
+                {tNav("signOut")}
               </button>
             </form>
           </div>

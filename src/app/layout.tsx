@@ -27,22 +27,19 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "FluentUp — Learn English free forever",
-    template: "%s · FluentUp English",
+    default: "FluentUp — İngilizceyi oyun gibi öğren",
+    template: "%s · FluentUp",
   },
   description:
-    "Gamified English learning platform. Practice vocabulary, grammar, listening and speaking. Earn XP, level up, keep your streak alive — free forever.",
+    "Türkçe arayüzde, oyun gibi İngilizce öğrenme platformu. Kelime, gramer, AI öğretmen, oyunlar — hepsi tek yerde.",
   keywords: [
-    "learn english",
-    "english vocabulary",
-    "english grammar",
-    "free english",
-    "english games",
-    "cefr english",
-    "English learning",
-    "language app",
-    "AI tutor",
-    "gamified learning",
+    "İngilizce öğrenme",
+    "İngilizce kelime",
+    "İngilizce gramer",
+    "AI öğretmen",
+    "ingilizce kursu",
+    "online ingilizce",
+    "FluentUp",
   ],
   authors: [{ name: "FluentUp" }],
   creator: "FluentUp",
@@ -50,6 +47,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://fluentupenglish.com"),
   alternates: {
     canonical: "/",
+    languages: {
+      tr: "/",
+      en: "/en",
+    },
   },
   manifest: "/manifest.webmanifest",
   applicationName: "FluentUp English",
@@ -59,21 +60,21 @@ export const metadata: Metadata = {
     title: "FluentUp",
   },
   openGraph: {
-    title: "FluentUp English — Learn English the fun way",
+    title: "FluentUp — İngilizceyi oyun gibi öğren",
     description:
-      "Gamified English learning platform. Earn XP, level up, keep your streak alive.",
+      "Kelime, gramer, AI öğretmen ve oyunlar — Türkçe arayüzde ücretsiz İngilizce öğren.",
     url: "https://fluentupenglish.com",
     siteName: "FluentUp English",
-    locale: "en_US",
-    alternateLocale: ["tr_TR"],
+    locale: "tr_TR",
+    alternateLocale: ["en_US"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     creator: "@fluentupenglish",
-    title: "FluentUp English",
+    title: "FluentUp",
     description:
-      "Gamified English learning platform. Earn XP, level up, keep your streak alive.",
+      "Türkçe arayüzlü ücretsiz İngilizce öğrenme platformu.",
   },
   robots: {
     index: true,
@@ -94,7 +95,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${jakarta.variable} ${bricolage.variable}`}>
+    <html lang="tr" className={`${jakarta.variable} ${bricolage.variable}`}>
       <body>
         <ToastProvider>
           {children}

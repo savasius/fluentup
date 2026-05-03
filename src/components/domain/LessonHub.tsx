@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, Badge, Button } from "@/components/ui";
 import { BookOpen, Clock, Zap, Check, Play } from "lucide-react";
 import { cn } from "@/lib/cn";

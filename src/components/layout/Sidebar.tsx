@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import {
   Home,
   Dumbbell,
@@ -23,23 +23,29 @@ import { cn } from "@/lib/cn";
 import { signOut } from "@/lib/auth/actions";
 import type { AppUser } from "./AppShell";
 
-type NavItem = {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-};
+type NavKey =
+  | "home"
+  | "practice"
+  | "games"
+  | "vocabulary"
+  | "collections"
+  | "grammar"
+  | "lesson"
+  | "tutor"
+  | "profile"
+  | "settings";
 
-const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: Home },
-  { href: "/practice", label: "Practice", icon: Dumbbell },
-  { href: "/games", label: "Games", icon: Gamepad2 },
-  { href: "/vocabulary", label: "Vocabulary", icon: BookOpen },
-  { href: "/collections", label: "Collections", icon: FolderOpen },
-  { href: "/grammar", label: "Grammar", icon: Notebook },
-  { href: "/lesson", label: "Lesson", icon: GraduationCap },
-  { href: "/tutor", label: "AI Tutor", icon: Sparkles },
-  { href: "/profile", label: "Profile", icon: User },
-  { href: "/settings", label: "Settings", icon: Settings },
+const NAV_CONFIG: { href: string; navKey: NavKey; icon: LucideIcon }[] = [
+  { href: "/", navKey: "home", icon: Home },
+  { href: "/practice", navKey: "practice", icon: Dumbbell },
+  { href: "/games", navKey: "games", icon: Gamepad2 },
+  { href: "/vocabulary", navKey: "vocabulary", icon: BookOpen },
+  { href: "/collections", navKey: "collections", icon: FolderOpen },
+  { href: "/grammar", navKey: "grammar", icon: Notebook },
+  { href: "/lesson", navKey: "lesson", icon: GraduationCap },
+  { href: "/tutor", navKey: "tutor", icon: Sparkles },
+  { href: "/profile", navKey: "profile", icon: User },
+  { href: "/settings", navKey: "settings", icon: Settings },
 ];
 
 interface SidebarProps {
@@ -50,6 +56,8 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
   const pathname = usePathname();
+  const tNav = useTranslations("nav");
+  const tSidebar = useTranslations("sidebar");
 
   return (
     <>
@@ -65,7 +73,7 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
         className={cn(
           "fixed lg:sticky top-0 left-0 h-screen w-64 bg-white border-r border-line z-40",
           "flex flex-col transition-transform duration-200",
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
         <div className="px-6 py-6 border-b border-line-soft">
@@ -84,14 +92,14 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
                 FluentUp
               </div>
               <div className="text-[10px] text-ink-muted font-bold tracking-widest uppercase">
-                English
+                {tSidebar("brandSubtitle")}
               </div>
             </div>
           </Link>
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {NAV_ITEMS.map((item) => {
+          {NAV_CONFIG.map((item) => {
             const Icon = item.icon;
             const isActive =
               item.href === "/"
@@ -107,14 +115,14 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
                   "flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition-colors",
                   isActive
                     ? "bg-primary text-white shadow-solid-primary"
-                    : "text-ink-soft hover:bg-line-soft"
+                    : "text-ink-soft hover:bg-line-soft",
                 )}
               >
                 <Icon
                   className="w-[18px] h-[18px]"
                   strokeWidth={isActive ? 2.5 : 2}
                 />
-                {item.label}
+                {tNav(item.navKey)}
               </Link>
             );
           })}
@@ -129,10 +137,10 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
                 strokeWidth={2}
               />
               <div className="font-display text-xs font-extrabold text-primary-dark">
-                Go Premium
+                {tSidebar("premiumTitle")}
               </div>
               <p className="mt-0.5 text-[11px] text-ink-soft font-medium leading-snug mb-2">
-                Unlock advanced drills
+                {tSidebar("premiumDesc")}
               </p>
               <div className="h-1.5 w-full bg-white rounded-full overflow-hidden">
                 <div className="h-full w-[65%] bg-primary rounded-full" />
@@ -147,10 +155,10 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
               className="block rounded-2xl bg-primary p-4 text-white shadow-solid-primary hover:-translate-y-0.5 transition"
             >
               <div className="font-display text-sm font-extrabold">
-                Join FluentUp
+                {tSidebar("joinTitle")}
               </div>
               <p className="mt-0.5 text-[11px] opacity-90 leading-snug">
-                Free forever. Save your progress.
+                {tSidebar("joinDesc")}
               </p>
             </Link>
           </div>
@@ -163,7 +171,7 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
             className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft"
           >
             <HelpCircle className="w-[18px] h-[18px]" strokeWidth={2} />
-            Help & legal
+            {tSidebar("helpLegal")}
           </Link>
           {user ? (
             <form action={signOut}>
@@ -172,7 +180,7 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
                 className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft"
               >
                 <LogOut className="w-[18px] h-[18px]" strokeWidth={2} />
-                Logout
+                {tSidebar("logout")}
               </button>
             </form>
           ) : (
@@ -182,7 +190,7 @@ export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
               className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold text-ink-soft hover:bg-line-soft"
             >
               <LogIn className="w-[18px] h-[18px]" strokeWidth={2} />
-              Sign in
+              {tSidebar("signInSidebar")}
             </Link>
           )}
         </div>

@@ -59,6 +59,13 @@
   --shadow-lift: 0 12px 28px -12px rgba(15, 23, 42, 0.12);
   --shadow-soft-xl: 0 20px 40px -15px rgba(15, 23, 42, 0.15),
     0 8px 16px -8px rgba(15, 23, 42, 0.1);
+
+  /* Kid theme accents */
+  --color-kid-sun: #fcd34d;
+  --color-kid-coral: #fb7185;
+  --color-kid-mint: #6ee7b7;
+  --color-kid-sky: #7dd3fc;
+  --color-kid-grape: #c084fc;
 }
 
 @layer base {

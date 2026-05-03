@@ -14,9 +14,9 @@ import {
   Check,
   ArrowLeft,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
-import type { ScrambleWord } from "@/app/(main)/games/word-scramble/page";
+import type { ScrambleWord } from "@/app/[locale]/(main)/games/word-scramble/page";
 import type { CefrLevel } from "@/lib/supabase/database.types";
 import {
   calculateRoundXp,

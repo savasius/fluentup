@@ -11,7 +11,7 @@ export interface AuthState {
 
 export async function signUp(
   _prevState: AuthState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AuthState> {
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
@@ -42,11 +42,12 @@ export async function signUp(
 
   revalidatePath("/", "layout");
   redirect("/onboarding");
+  return {};
 }
 
 export async function signIn(
   _prevState: AuthState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AuthState> {
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
@@ -68,9 +69,10 @@ export async function signIn(
 
   revalidatePath("/", "layout");
   redirect("/");
+  return {};
 }
 
-export async function signOut() {
+export async function signOut(): Promise<void> {
   const supabase = await createServerClient();
   await supabase.auth.signOut();
   revalidatePath("/", "layout");

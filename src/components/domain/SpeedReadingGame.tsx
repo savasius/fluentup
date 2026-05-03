@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, Button, Confetti } from "@/components/ui";
 import { ArrowLeft, Clock, Zap, Trophy, RotateCcw } from "lucide-react";
 import { useToast } from "@/lib/toast/context";

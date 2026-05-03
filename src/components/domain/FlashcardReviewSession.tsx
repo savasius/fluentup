@@ -7,7 +7,7 @@ import type { WordMeaning } from "@/lib/supabase/database.types";
 import { reviewFlashcard } from "@/lib/flashcards/actions";
 import type { FlashcardQuality } from "@/lib/flashcards/sm2";
 import { useToast } from "@/lib/toast/context";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 interface WordItem {
   slug: string;

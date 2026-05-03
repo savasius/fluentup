@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, Badge, Button } from "@/components/ui";
 import { EmptyStateIllustration } from "@/components/illustrations";
 import { Search, X } from "lucide-react";

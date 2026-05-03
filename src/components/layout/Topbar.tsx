@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Menu, Flame, Zap, Bell } from "lucide-react";
 import { Button } from "@/components/ui";
 import { SearchBar } from "./SearchBar";
@@ -13,13 +14,15 @@ interface TopbarProps {
 }
 
 export function Topbar({ onMenuClick, user }: TopbarProps) {
+  const t = useTranslations("common");
+
   return (
     <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-line">
       <div className="h-16 px-5 lg:px-8 flex items-center gap-3 lg:gap-4">
         <button
           onClick={onMenuClick}
           className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-ink-soft hover:bg-line-soft"
-          aria-label="Open menu"
+          aria-label={t("openMenu")}
         >
           <Menu className="w-5 h-5" strokeWidth={2.5} />
         </button>
@@ -51,13 +54,13 @@ export function Topbar({ onMenuClick, user }: TopbarProps) {
                   strokeWidth={2.5}
                 />
                 <span className="font-extrabold text-sm text-primary-dark tabular-nums">
-                  {user.totalXp.toLocaleString("en-US")}
+                  {user.totalXp.toLocaleString("tr-TR")}
                 </span>
               </div>
 
               <button
                 className="hidden lg:flex w-10 h-10 items-center justify-center rounded-xl hover:bg-line-soft text-ink-soft relative"
-                aria-label="Notifications"
+                aria-label={t("notifications")}
               >
                 <Bell className="w-5 h-5" strokeWidth={2.5} />
                 <span className="absolute top-2 right-2.5 w-2 h-2 bg-action rounded-full" />
@@ -71,11 +74,11 @@ export function Topbar({ onMenuClick, user }: TopbarProps) {
                 href="/login"
                 className="text-sm font-bold text-ink-soft hover:text-ink transition"
               >
-                Sign in
+                {t("signIn")}
               </Link>
               <Link href="/signup">
                 <Button variant="primary" shape="pill" size="sm">
-                  Sign up
+                  {t("signUp")}
                 </Button>
               </Link>
             </>

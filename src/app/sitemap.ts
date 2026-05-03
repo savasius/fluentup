@@ -15,6 +15,8 @@ const BASE_URL = "https://fluentupenglish.com";
  */
 export const dynamic = "force-dynamic";
 
+const LOCALE_PREFIXES = ["", "/en"] as const;
+
 const STATIC_ROUTES = [
   { path: "", changeFreq: "daily" as const, priority: 1 },
   { path: "/practice", changeFreq: "weekly" as const, priority: 0.8 },
@@ -73,24 +75,34 @@ const STATIC_ROUTES = [
   { path: "/signup", changeFreq: "yearly" as const, priority: 0.4 },
   { path: "/privacy", changeFreq: "yearly" as const, priority: 0.2 },
   { path: "/terms", changeFreq: "yearly" as const, priority: 0.2 },
+  { path: "/kid", changeFreq: "weekly" as const, priority: 0.8 },
+  { path: "/kid/words", changeFreq: "weekly" as const, priority: 0.7 },
+  { path: "/kid/games", changeFreq: "weekly" as const, priority: 0.7 },
+  { path: "/kid/stories", changeFreq: "weekly" as const, priority: 0.7 },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  const collectionEntries: MetadataRoute.Sitemap = COLLECTIONS.map((c) => ({
-    url: `${BASE_URL}/collections/${c.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
+  const collectionEntries: MetadataRoute.Sitemap = LOCALE_PREFIXES.flatMap(
+    (prefix) =>
+      COLLECTIONS.map((c) => ({
+        url: `${BASE_URL}${prefix}/collections/${c.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      })),
+  );
 
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({
-    url: `${BASE_URL}${r.path}`,
-    lastModified: now,
-    changeFrequency: r.changeFreq,
-    priority: r.priority,
-  }));
+  const staticEntries: MetadataRoute.Sitemap = LOCALE_PREFIXES.flatMap(
+    (prefix) =>
+      STATIC_ROUTES.map((r) => ({
+        url: `${BASE_URL}${prefix}${r.path}`,
+        lastModified: now,
+        changeFrequency: r.changeFreq,
+        priority: r.priority,
+      })),
+  );
 
   let wordEntries: MetadataRoute.Sitemap = [];
   let grammarEntries: MetadataRoute.Sitemap = [];
@@ -110,32 +122,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const words = wordsResult.data as WordSitemapRow[] | null;
     if (words) {
-      wordEntries = words.map((w) => ({
-        url: `${BASE_URL}/vocabulary/${w.slug}`,
-        lastModified: new Date(w.updated_at),
-        changeFrequency: "monthly" as const,
-        priority: 0.7,
-      }));
+      wordEntries = LOCALE_PREFIXES.flatMap((prefix) =>
+        words.map((w) => ({
+          url: `${BASE_URL}${prefix}/vocabulary/${w.slug}`,
+          lastModified: new Date(w.updated_at),
+          changeFrequency: "monthly" as const,
+          priority: 0.7,
+        })),
+      );
     }
 
     const topics = grammarResult.data as GrammarSitemapRow[] | null;
     if (topics) {
-      grammarEntries = topics.map((t) => ({
-        url: `${BASE_URL}/grammar/${t.slug}`,
-        lastModified: new Date(t.updated_at),
-        changeFrequency: "monthly" as const,
-        priority: 0.7,
-      }));
+      grammarEntries = LOCALE_PREFIXES.flatMap((prefix) =>
+        topics.map((t) => ({
+          url: `${BASE_URL}${prefix}/grammar/${t.slug}`,
+          lastModified: new Date(t.updated_at),
+          changeFrequency: "monthly" as const,
+          priority: 0.7,
+        })),
+      );
     }
 
     const lessonRows = lessonsResult.data as LessonSitemapRow[] | null;
     if (lessonRows) {
-      lessonEntries = lessonRows.map((l) => ({
-        url: `${BASE_URL}/lesson/${l.slug}`,
-        lastModified: new Date(l.created_at),
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      }));
+      lessonEntries = LOCALE_PREFIXES.flatMap((prefix) =>
+        lessonRows.map((l) => ({
+          url: `${BASE_URL}${prefix}/lesson/${l.slug}`,
+          lastModified: new Date(l.created_at),
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+        })),
+      );
     }
   } catch (err) {
     console.error("Sitemap: failed to fetch dynamic entries", err);

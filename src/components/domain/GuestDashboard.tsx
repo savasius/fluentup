@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, Button, Badge, ScrollReveal } from "@/components/ui";
 import { WordOfTheDayCard } from "./WordOfTheDayCard";
 import { Mascot } from "@/components/illustrations";

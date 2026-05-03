@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, Badge } from "@/components/ui";
 import { ArrowRight, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";

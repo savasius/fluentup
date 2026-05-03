@@ -12,9 +12,9 @@ import {
   ArrowLeft,
   Check,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
-import type { MatchWord } from "@/app/(main)/games/match/page";
+import type { MatchWord } from "@/app/[locale]/(main)/games/match/page";
 import type { CefrLevel } from "@/lib/supabase/database.types";
 import {
   sanitizeScore,

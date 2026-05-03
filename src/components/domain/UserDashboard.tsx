@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, ProgressBar, Button, Badge } from "@/components/ui";
 import { WordOfTheDayCard } from "./WordOfTheDayCard";
 import {

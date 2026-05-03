@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, Button, Confetti } from "@/components/ui";
 import {
   Play,
@@ -23,7 +23,7 @@ import {
 import { awardXp } from "@/lib/economy/actions";
 import { XP_REWARDS, levelFromXp } from "@/lib/economy/constants";
 import { trackEvent } from "@/lib/analytics/events";
-import type { HangmanWord } from "@/app/(main)/games/hangman/page";
+import type { HangmanWord } from "@/app/[locale]/(main)/games/hangman/page";
 import type { CefrLevel } from "@/lib/supabase/database.types";
 
 interface Props {

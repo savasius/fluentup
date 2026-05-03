@@ -90,6 +90,8 @@ export interface Database {
           id: string;
           slug: string;
           word: string;
+          translation_tr: string | null;
+          kid_safe: boolean;
           phonetic_uk: string | null;
           phonetic_us: string | null;
           audio_url_uk: string | null;
@@ -108,11 +110,13 @@ export interface Database {
         };
         Insert: Omit<
           Database["public"]["Tables"]["words"]["Row"],
-          "id" | "created_at" | "updated_at"
+          "id" | "created_at" | "updated_at" | "translation_tr" | "kid_safe"
         > & {
           id?: string;
           created_at?: string;
           updated_at?: string;
+          translation_tr?: string | null;
+          kid_safe?: boolean;
         };
         Update: Partial<Database["public"]["Tables"]["words"]["Insert"]>;
       };
@@ -240,6 +244,12 @@ export interface Database {
           native_language: string;
           learning_language: string;
           cefr_level: CefrLevel;
+          mode: "adult" | "kid";
+          age: number | null;
+          parent_email: string | null;
+          parent_consent: boolean;
+          parent_consent_at: string | null;
+          kid_interests: string[] | null;
           onboarding_completed: boolean;
           total_xp: number;
           current_streak: number;
@@ -255,10 +265,23 @@ export interface Database {
         };
         Insert: Omit<
           Database["public"]["Tables"]["profiles"]["Row"],
-          "created_at" | "updated_at"
+          | "created_at"
+          | "updated_at"
+          | "mode"
+          | "age"
+          | "parent_email"
+          | "parent_consent"
+          | "parent_consent_at"
+          | "kid_interests"
         > & {
           created_at?: string;
           updated_at?: string;
+          mode?: "adult" | "kid";
+          age?: number | null;
+          parent_email?: string | null;
+          parent_consent?: boolean;
+          parent_consent_at?: string | null;
+          kid_interests?: string[] | null;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
       };

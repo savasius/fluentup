@@ -12,7 +12,7 @@ import {
   Check,
   ArrowLeft,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { getShuffledWords, type SentenceData } from "@/lib/games/sentences";
 import {

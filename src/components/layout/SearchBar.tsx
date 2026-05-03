@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Search, BookMarked, BookOpen } from "lucide-react";
 import { Spinner } from "@/components/ui";
 import { trackEvent } from "@/lib/analytics/events";
@@ -25,6 +26,7 @@ interface SearchResults {
 }
 
 export function SearchBar() {
+  const t = useTranslations("search");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResults>({
     words: [],
@@ -99,7 +101,7 @@ export function SearchBar() {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Search words, grammar…"
+          placeholder={t("placeholder")}
           className="w-full bg-line-soft border border-line rounded-2xl py-2.5 pl-10 pr-4 text-sm placeholder:text-ink-muted focus:outline-none focus:bg-white focus:border-primary transition"
         />
       </div>
@@ -109,22 +111,24 @@ export function SearchBar() {
           {loading && (
             <div className="p-4 flex items-center justify-center gap-2 text-sm text-ink-muted">
               <Spinner size="sm" />
-              <span>Searching…</span>
+              <span>{t("searching")}</span>
             </div>
           )}
 
           {!loading && !hasResults && (
             <div className="p-6 text-center">
               <Search className="w-8 h-8 text-ink-muted mx-auto mb-2" strokeWidth={2} />
-              <p className="text-sm text-ink-muted">No matches for &ldquo;{query}&rdquo;</p>
-              <p className="text-xs text-ink-muted mt-1">Try a different term</p>
+              <p className="text-sm text-ink-muted">
+                {t("noMatches", { query })}
+              </p>
+              <p className="text-xs text-ink-muted mt-1">{t("tryDifferent")}</p>
             </div>
           )}
 
           {!loading && results.words.length > 0 && (
             <div className="p-2">
               <div className="px-2 py-1 text-xs font-bold uppercase tracking-widest text-ink-muted">
-                Words
+                {t("words")}
               </div>
               {results.words.map((w) => (
                 <Link
@@ -156,7 +160,7 @@ export function SearchBar() {
           {!loading && results.grammar.length > 0 && (
             <div className="p-2 border-t border-line">
               <div className="px-2 py-1 text-xs font-bold uppercase tracking-widest text-ink-muted">
-                Grammar
+                {t("grammar")}
               </div>
               {results.grammar.map((g) => (
                 <Link
